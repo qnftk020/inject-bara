@@ -1,7 +1,7 @@
 import type { PatternMatch } from './patterns/types.js';
 import { ALL_SCANNERS } from './patterns/index.js';
 import { matchPmi, type PmiResult } from './pmi/match.js';
-import { judge, simulate, type JudgeResult, type SimResult } from './judge.js';
+import { judge, simulate, hasApiKey, type JudgeResult, type SimResult } from './judge.js';
 
 export interface ScanOptions {
   json?: boolean;
@@ -76,20 +76,30 @@ export async function scan(
   }
 
   // === Layer 3: LLM-as-Judge ===
-  try {
-    const judgeResult = await judge(extractedTexts);
-    result.judge = judgeResult;
+  if (!hasApiKey()) {
     if (options?.verbose) {
-      console.error(`[scanner] Judge: ${judgeResult.overallVerdict} (confidence: ${judgeResult.highestConfidence})`);
+      console.error(`[scanner] GEMINI_API_KEY not set — Layer 3 (LLM-as-judge) skipped`);
     }
-  } catch (err) {
-    if (options?.verbose) {
-      console.error(`[scanner] Judge error:`, err);
+  } else {
+    try {
+      const judgeResult = await judge(extractedTexts);
+      result.judge = judgeResult;
+      if (options?.verbose) {
+        console.error(`[scanner] Judge: ${judgeResult.overallVerdict} (confidence: ${judgeResult.highestConfidence})`);
+      }
+    } catch (err) {
+      if (options?.verbose) {
+        console.error(`[scanner] Judge error:`, err);
+      }
     }
   }
 
   // === 시뮬레이션 모드 ===
-  if (options?.simulate) {
+  if (options?.simulate && !hasApiKey()) {
+    if (options?.verbose) {
+      console.error(`[scanner] GEMINI_API_KEY not set — simulation skipped`);
+    }
+  } else if (options?.simulate) {
     try {
       const simResult = await simulate(url, html, extractedTexts);
       result.simulation = simResult;

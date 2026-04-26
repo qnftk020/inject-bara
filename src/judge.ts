@@ -31,14 +31,19 @@ import { resolve } from 'path';
 const GEMINI_MODEL = 'gemini-2.5-flash';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
-function getApiKey(): string {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new Error('GEMINI_API_KEY not set in environment');
-  return key;
+function getApiKey(): string | null {
+  return process.env.GEMINI_API_KEY || null;
+}
+
+/** API 키 존재 여부 (외부에서 사전 체크용) */
+export function hasApiKey(): boolean {
+  return !!process.env.GEMINI_API_KEY;
 }
 
 async function callGemini(prompt: string): Promise<string> {
-  const res = await fetch(`${GEMINI_URL}?key=${getApiKey()}`, {
+  const key = getApiKey();
+  if (!key) throw new Error('GEMINI_API_KEY not set');
+  const res = await fetch(`${GEMINI_URL}?key=${key}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

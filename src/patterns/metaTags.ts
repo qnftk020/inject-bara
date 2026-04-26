@@ -1,4 +1,6 @@
 import { load } from 'cheerio';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import type { PatternMatch } from './types.js';
 
 // 의심 메타 태그 이름
@@ -8,8 +10,24 @@ const SUSPICIOUS_NAMES = new Set([
   'ai-context', 'bot-instruction', 'assistant-note',
 ]);
 
+// data/korean_patterns.json 로드
+function loadKoreanPatterns(): RegExp[] {
+  const candidates = [
+    resolve(process.cwd(), 'data/korean_patterns.json'),
+  ];
+  for (const p of candidates) {
+    try {
+      const raw = JSON.parse(readFileSync(p, 'utf-8')) as { pattern: string }[];
+      return raw.map(e => new RegExp(e.pattern));
+    } catch {
+      continue;
+    }
+  }
+  return [];
+}
+
 // 명령어 패턴 키워드 (대소문자 무시)
-const COMMAND_PATTERNS = [
+const COMMAND_PATTERNS: RegExp[] = [
   /\balways\b/i,
   /\bignore\b/i,
   /\bsystem\b/i,
@@ -26,6 +44,7 @@ const COMMAND_PATTERNS = [
   /\b무시\b/,
   /\b항상\b.*\b설명/,
   /\b역할\b.*\b수행/,
+  ...loadKoreanPatterns(),
 ];
 
 const MIN_CONTENT_LENGTH = 100;
