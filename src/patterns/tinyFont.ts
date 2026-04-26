@@ -50,5 +50,24 @@ export function scanTinyFont(html: string): PatternMatch[] {
     });
   });
 
+  // transform: scale(0) / scale(0.001) 등으로 시각적 크기 0 만들기
+  $('[style]').each((_, el) => {
+    const style = parseStyle($(el).attr('style') || '');
+    const transform = style['transform'] || '';
+    const scaleMatch = transform.match(/scale\(([\d.]+)\)/);
+    if (scaleMatch && parseFloat(scaleMatch[1]) < 0.01) {
+      const text = $(el).text().trim();
+      if (text.length < 5) return;
+      matches.push({
+        patternId: 'tiny-font',
+        patternName: 'Tiny Font Size',
+        severity: 30,
+        location: getSelector($, el as any),
+        extractedText: text.slice(0, 200),
+        details: `transform: scale(${scaleMatch[1]})`,
+      });
+    }
+  });
+
   return matches;
 }

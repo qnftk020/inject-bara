@@ -23,8 +23,13 @@ export function scanHiddenCss(html: string): PatternMatch[] {
     const opacity = parseFloat(style['opacity'] || '1');
     if (!isNaN(opacity) && opacity < 0.1) reasons.push(`opacity:${opacity}`);
 
-    if (style['clip-path'] === 'inset(50%)') reasons.push('clip-path:inset(50%)');
+    // clip-path 변형: inset(50%), circle(0), polygon(0 0) 등
+    const clipPath = style['clip-path'] || '';
+    if (/inset\(50%\)|circle\(0|polygon\(0/.test(clipPath)) reasons.push(`clip-path:${clipPath}`);
     if (style['clip']?.includes('rect(0')) reasons.push(`clip:${style['clip']}`);
+
+    // pointer-events:none + opacity:0 조합
+    if (style['pointer-events'] === 'none' && opacity < 0.1) reasons.push('pointer-events:none+opacity:0');
 
     if (reasons.length === 0) return;
 

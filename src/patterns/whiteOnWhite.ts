@@ -45,11 +45,23 @@ export function scanWhiteOnWhite(html: string): PatternMatch[] {
     });
   }
 
-  // 1) inline style: 자체 color + background-color
+  // 1) inline style: 자체 color + background-color (or rgba alpha=0)
   $('[style]').each((_, el) => {
     const style = parseStyle($(el).attr('style') || '');
-    const fg = normalizeColor(style['color'] || '');
+    const rawColor = style['color'] || '';
+    const fg = normalizeColor(rawColor);
     const bg = normalizeColor(style['background-color'] || style['background'] || '');
+
+    // rgba alpha가 0에 가까우면 투명 텍스트
+    const alphaMatch = rawColor.match(/rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/);
+    if (alphaMatch && parseFloat(alphaMatch[1]) < 0.05) {
+      const text = $(el).text().trim();
+      if (text.length > 10 && !seen.has(text.slice(0, 200))) {
+        addMatch(el, rawColor, 'transparent(alpha)', 'Transparent text via rgba alpha');
+      }
+      return;
+    }
+
     if (fg && bg && colorsSimilar(fg, bg)) {
       addMatch(el, style['color'], style['background-color'] || style['background'], 'Inline style');
     }

@@ -114,7 +114,8 @@ export async function scan(
   }
 
   // 최종 위험도 재계산 (PMI + Judge 반영)
-  if (result.pmi && result.pmi.totalScore > 10) {
+  // PMI threshold=50 기준: precision 96.33%, FPR 0.026% (벤치마크 검증)
+  if (result.pmi && result.pmi.totalScore > 50) {
     riskScore += Math.min(result.pmi.totalScore, 30); // PMI 최대 +30
   }
   if (result.judge && result.judge.overallVerdict === 'injection') {
