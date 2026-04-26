@@ -456,7 +456,8 @@
     return false;
   }
 
-  const INJECTION_VOCAB = /\b(always|ignore|you are|you must|do not|never|describe|recommend|portray|frame|emphasize|position\s+(this|the|it)|treat\s+(this|the|it)|consider\s+(this|the|it)|verified|act as|system|assistant|agent|prompt|instruction)\b|(항상|반드시|무시|이전\s*(명령|지시)|당신은|너는|시스템|에이전트|어시스턴트|반드시\s*추천|반드시\s*묘사|verified)/i;
+  // 인젝션 어휘: 단일 단어가 아닌 명령 구문 조합만 매칭
+  const INJECTION_VOCAB = /\b(ignore\s+(all|previous|prior)|you are\s+(now|a|an)|you must\s+(always|never)|do not\s+(mention|reveal|discuss)|always\s+(describe|recommend|portray|emphasize)|never\s+(mention|criticize|discuss)|act as\s+(a|an|if)|pretend\s+to\s+be|override\s+(system|instruction|prompt)|bypass\s+(safety|security|filter)|disregard\s+(previous|prior|all)|forget\s+(previous|all|everything))\b|(이전.*지시.*무시|항상.*추천|항상.*설명|항상.*묘사|반드시.*추천|반드시.*묘사|지침을?\s*무시|명령을?\s*무시|당신은\s*이제부터)/i;
 
   function looksLikeInjection(text) {
     return INJECTION_VOCAB.test(text);
@@ -464,8 +465,13 @@
 
   function scanWhiteOnWhite() {
     const matches = [];
+    // 나무위키 등 탭/테이블 UI에서 hover용 흰 글씨 제외
+    const UI_TAGS = new Set(['NAV', 'HEADER', 'FOOTER', 'BUTTON', 'A', 'LABEL', 'TH']);
     document.querySelectorAll('body *').forEach((el) => {
       if (isSelf(el) || isInNonContent(el)) return;
+      if (UI_TAGS.has(el.tagName)) return;
+      // 링크나 버튼 내부 텍스트 제외
+      if (el.closest('a, button, nav, [role="tab"], [role="tablist"], [role="navigation"]')) return;
       const txt = directText(el);
       if (txt.length < 40) return;
       if (!looksLikeInjection(txt)) return;
@@ -523,7 +529,7 @@
       if (!el || isSelf(el) || isInNonContent(el) || seen.has(el)) return;
       const text = node.nodeValue;
       const total = text.length;
-      if (total < 10) return;
+      if (total < 30) return; // 짧은 텍스트에서 ratio 과대 방지
       const zwc = (text.match(ZWC) || []).length;
       if (zwc === 0) return;
       const ratio = zwc / total;
@@ -595,6 +601,8 @@
     const matches = [];
     document.querySelectorAll('body *').forEach((el) => {
       if (isSelf(el) || isInNonContent(el)) return;
+      // 이미지만 있는 컨테이너 제외
+      if (el.querySelector('img') && !directText(el).trim()) return;
       const txt = directText(el);
       if (txt.length < 40) return;
       if (!looksLikeInjection(txt)) return;
