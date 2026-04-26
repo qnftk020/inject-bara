@@ -1,0 +1,6 @@
+[
+  {"pattern": "(이전|앞선|기존).*(지침|명령|규칙|설정).*(무시|잊|삭제|취소)", "label": "ko-instruction-override"},
+  {"pattern": "(출력|요약|변환).*(해|하|해주|주세|하십시오)", "label": "ko-output-command"},
+  {"pattern": "(시스템|관리자|루트).*(권한|모드|활성)", "label": "ko-system-access"},
+  {"pattern": "(테스트|디버그|개발).*(모드|환경).*활성", "label": "ko-mode-switch"}
+]

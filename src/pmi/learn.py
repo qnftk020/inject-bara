@@ -28,7 +28,7 @@ def tokenize(text):
     tokens = [t for t in tokens if t not in TOPIC_STOPWORDS]
     return tokens
 
-def count_grams(file_path, window=3): # Reduced window size for command-action pairs
+def count_grams(file_path, window=5): # Matching Backend window size
     unigrams = Counter()
     bigrams = Counter()
     total_tokens = 0

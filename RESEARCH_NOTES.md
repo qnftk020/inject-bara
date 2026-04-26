@@ -24,7 +24,7 @@
 - Co-occurrence window: 5.
 - Top 200 pairs exported to `data/signatures.json`.
 - Filtered against normal corpus frequency.
-- **Top Signatures:** "lock+pick", "all+filters", "car+hijack", "http+link", "market+stock".
+- **Top Signatures:** "instructions+previous", "가짜입니다+기사는", "라는+문구를", "당신은+이제부터", "사용자의+정보를".
 
 ## 3. LLM-as-Judge Prompt Tuning
 
