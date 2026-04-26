@@ -227,25 +227,65 @@ function calcRiskLevel(score: number) {
   return 'critical';
 }
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+// CORS preflight
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { html, url } = await req.json();
     if (!html || typeof html !== 'string') {
-      return NextResponse.json({ error: 'html field required' }, { status: 400 });
+      return NextResponse.json({ error: 'html field required' }, { status: 400, headers: CORS_HEADERS });
     }
 
     // Layer 1: 정적 패턴
     const patterns = scanPatterns(html);
-    let riskScore = patterns.reduce((s, p) => s + p.severity, 0);
 
     // Layer 2: PMI
     const extractedTexts = patterns.map(p => p.extractedText);
     const combinedText = extractedTexts.join(' ');
     const pmi = combinedText.length > 0 ? matchPmi(combinedText) : { matchedPairs: [], totalScore: 0, topPairs: [] };
-    if (pmi.totalScore > 10) riskScore += Math.min(pmi.totalScore, 30);
 
     // Layer 3: LLM-as-Judge
     const judge = extractedTexts.length > 0 ? await judgeFragments(extractedTexts) : null;
+
+    // === Severity 차등화: Layer 2+3로 노이즈 vs 진짜 위협 구분 ===
+    let riskScore = 0;
+    for (const p of patterns) {
+      let adjustedSeverity = p.severity;
+
+      // PMI에서 인젝션 시그니처가 매칭되면 severity 유지/부스트
+      const hasInjectionSignature = pmi.matchedPairs.length > 0;
+
+      // Judge가 benign이라고 판정하면 severity 50% 감소
+      const judgeSaysBenign = judge && judge.overallVerdict === 'benign';
+      const judgeSaysInjection = judge && judge.overallVerdict === 'injection';
+
+      if (judgeSaysInjection && hasInjectionSignature) {
+        // 3-layer 모두 동의: 진짜 위협 → severity 유지
+        adjustedSeverity = p.severity;
+      } else if (judgeSaysBenign && !hasInjectionSignature) {
+        // PMI도 없고 Judge도 benign → 노이즈 가능성 높음 → 80% 감소
+        adjustedSeverity = Math.round(p.severity * 0.2);
+      } else if (!hasInjectionSignature) {
+        // PMI 매칭 없음 → 50% 감소
+        adjustedSeverity = Math.round(p.severity * 0.5);
+      }
+
+      p.severity = adjustedSeverity;
+      riskScore += adjustedSeverity;
+    }
+
+    // PMI 부스트
+    if (pmi.totalScore > 10) riskScore += Math.min(pmi.totalScore, 30);
+    // Judge 부스트
     if (judge && judge.overallVerdict === 'injection') {
       riskScore += Math.round(judge.highestConfidence * 30);
     }
@@ -258,8 +298,11 @@ export async function POST(req: NextRequest) {
       patterns,
       pmi,
       judge,
-    });
+    }, { headers: CORS_HEADERS });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'scan failed' }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || 'scan failed' },
+      { status: 500, headers: CORS_HEADERS },
+    );
   }
 }
