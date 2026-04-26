@@ -1,7 +1,5 @@
 # CLAUDE.md — InjectScan 멀티 에이전트 규칙
 
-@AGENTS.md
-
 ## 프로젝트
 - **InjectScan**: 웹페이지/문서의 숨겨진 AI 프롬프트 인젝션을 자동 탐지하는 CLI
 - CMUX x AIM 해커톤 (2026-04-26), AI Safety & Security 트랙
