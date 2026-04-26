@@ -257,7 +257,7 @@
   const widget = document.createElement('div');
   widget.id = WIDGET_ID;
   widget.innerHTML = `
-    <img class="capy" src="${SCRIPT_BASE}capybara-sleep.png" alt="InjectScan">
+    <img class="capy" src="${SCRIPT_BASE}capybara-sleep.png" alt="InjectScan" crossorigin="anonymous" referrerpolicy="no-referrer">
     <span class="hint show-on-hover">클릭해서 스캔 시작</span>
   `;
   document.body.appendChild(widget);
@@ -309,8 +309,8 @@
         currentState = STATE.CLEAN;
       }
 
-      // Step 2: 서버 측 Layer 2+3 (비동기, 결과 오면 패널 업데이트)
-      if (lastResults.totalCount > 0) {
+      // Step 2: 서버 측 Layer 2+3 (항상 실행)
+      {
         showBadge('L2+L3 분석 중...', 'scanning');
         try {
           const serverResults = await scanServer();
@@ -332,10 +332,8 @@
           }
         }
         // 최종 배지 업데이트
-        if (lastResults.totalCount > 0) {
-          var lvl = lastResults.level;
-          showBadge(lvl.label + ' · ' + lastResults.totalCount + '건', lvl.key === 'clean' ? 'clean' : 'warn');
-        }
+        var lvl = lastResults.level;
+        showBadge(lvl.label + ' · ' + lastResults.totalCount + '건', lvl.key === 'clean' ? 'clean' : 'warn');
       }
     } else {
       // Back to sleep
@@ -368,17 +366,20 @@
     };
   }
 
-  // 서버 측 Layer 2+3 (클라이언트가 찾은 의심 텍스트만 전송)
+  // 서버 측 Layer 2+3 (항상 실행)
   async function scanServer() {
-    if (!lastResults || lastResults.totalCount === 0) {
-      console.log('[InjectScan] No patterns found — skipping server scan');
-      return null;
+    var fragments;
+    if (lastResults && lastResults.totalCount > 0) {
+      fragments = lastResults.matches.map(m => ({
+        text: m.extractedText,
+        patternId: m.patternId,
+        location: m.location,
+      }));
+    } else {
+      // L1에서 못 잡아도 페이지 본문을 L2+L3에 전달
+      var bodyText = (document.body.innerText || '').slice(0, 3000);
+      fragments = [{ text: bodyText, patternId: 'full-page', location: 'body' }];
     }
-    const fragments = lastResults.matches.map(m => ({
-      text: m.extractedText,
-      patternId: m.patternId,
-      location: m.location,
-    }));
     console.log('[InjectScan] Sending', fragments.length, 'fragments to', SCRIPT_BASE + 'api/judge');
     const res = await fetch(SCRIPT_BASE + 'api/judge', {
       method: 'POST',
