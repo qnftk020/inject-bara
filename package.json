@@ -1,14 +1,22 @@
 {
-  "name": "hackathon-project",
+  "name": "injectscan",
   "version": "0.1.0",
   "private": true,
+  "bin": {
+    "injectscan": "./bin/injectscan.mjs"
+  },
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "scan": "node bin/injectscan.mjs"
   },
   "dependencies": {
+    "chalk": "^5.4.1",
+    "cheerio": "^1.0.0",
+    "commander": "^13.1.0",
     "next": "16.2.4",
     "react": "19.2.4",
     "react-dom": "19.2.4"
