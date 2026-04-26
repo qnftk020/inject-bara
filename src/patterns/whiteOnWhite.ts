@@ -31,17 +31,28 @@ export function scanWhiteOnWhite(html: string): PatternMatch[] {
   const matches: PatternMatch[] = [];
   const seen = new Set<string>();
 
+  const INJECTION_KW = /\b(ignore|always|override|instruction|previous|forget|pretend|bypass|you are|system|prompt)\b|\b(무시|항상|지시|명령|이전|역할|시스템)\b/i;
+  const UI_TAGS = new Set(['a', 'button', 'nav', 'label', 'th', 'thead']);
+
   function addMatch(el: any, fg: string, bg: string, source: string) {
     const text = $(el).text().trim();
-    if (text.length <= 10 || seen.has(text.slice(0, 200))) return;
+    if (text.length <= 30 || seen.has(text.slice(0, 200))) return;
+
+    // UI 요소 제외 (탭, 네비게이션, 버튼 등)
+    const tag = ((el as any).tagName || (el as any).name || '').toLowerCase();
+    if (UI_TAGS.has(tag)) return;
+
     seen.add(text.slice(0, 200));
+
+    // 인젝션 키워드 없으면 severity 하향
+    const hasInjection = INJECTION_KW.test(text);
     matches.push({
       patternId: 'white-on-white',
       patternName: 'White-on-White Text',
-      severity: 25,
+      severity: hasInjection ? 25 : 5,
       location: getSelector($, el as any),
       extractedText: text.slice(0, 200),
-      details: `${source} — fg:${fg} bg:${bg}`,
+      details: `${source} — fg:${fg} bg:${bg}${hasInjection ? '' : ' — no injection keywords, downgraded'}`,
     });
   }
 

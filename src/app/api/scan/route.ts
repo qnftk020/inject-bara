@@ -137,17 +137,20 @@ function scanPatterns(html: string): PatternMatch[] {
     matches.push({ patternId: 'aria-hidden', patternName: 'ARIA-hidden Instruction', severity: 15, location: (el as any).name || 'unknown', extractedText: text.slice(0, 200), details: `${matched.length} instruction keywords` });
   });
 
-  // Zero-width
+  // Zero-width — 숫자+단위 제외, 인젝션 키워드 없으면 하향
   const ZW = /[\u200B\u200C\u200D\uFEFF\u2060]/g;
+  const NUMERIC_UNIT_RE = /^\d[\d.,]*\s*(mm|cm|km|kg|mg|ml|대|세|명|개|원|억|만|천|건|년|월|일|발|게이지)/i;
   $('body *').each((_, el) => {
     const text = $(el).text().trim();
     if (text.length < 30) return;
     const zwc = (text.match(ZW) || []).length;
     if (zwc === 0) return;
     const ratio = zwc / text.length;
-    if (ratio > 0.05) {
-      matches.push({ patternId: 'zero-width', patternName: 'Zero-Width Characters', severity: 30, location: (el as any).name || 'unknown', extractedText: text.replace(ZW, '').slice(0, 200), details: `${zwc} zero-width chars (ratio: ${(ratio * 100).toFixed(1)}%)` });
-    }
+    if (ratio <= 0.05) return;
+    const cleaned = text.replace(ZW, '').trim();
+    if (NUMERIC_UNIT_RE.test(cleaned)) return;
+    const hasCmd = INJECT_RE.test(cleaned);
+    matches.push({ patternId: 'zero-width', patternName: 'Zero-Width Characters', severity: hasCmd ? 30 : 5, location: (el as any).name || 'unknown', extractedText: cleaned.slice(0, 200), details: `${zwc} zero-width chars (ratio: ${(ratio * 100).toFixed(1)}%)${hasCmd ? '' : ' — downgraded'}` });
   });
 
   return matches;
