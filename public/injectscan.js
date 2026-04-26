@@ -268,18 +268,41 @@
   const capyImg = widget.querySelector('.capy');
   const hintEl = widget.querySelector('.hint');
 
+  // Fallback: 이미지 로드 실패 시 emoji 대체
+  const FALLBACK = { sleep: '😴🦫', awake: '👀🦫', warning: '⚠️🦫' };
+  let imgFailed = false;
+
+  capyImg.addEventListener('error', function () {
+    imgFailed = true;
+    capyImg.style.display = 'none';
+    let emoji = widget.querySelector('.capy-emoji');
+    if (!emoji) {
+      emoji = document.createElement('span');
+      emoji.className = 'capy-emoji';
+      emoji.style.cssText = 'font-size:48px;cursor:pointer;display:block;text-align:center;width:80px;height:80px;line-height:80px;';
+      widget.insertBefore(emoji, capyImg);
+      emoji.addEventListener('click', function () { capyImg.click(); });
+    }
+    emoji.textContent = FALLBACK.sleep;
+  });
+
+  function setEmoji(state) {
+    const emoji = widget.querySelector('.capy-emoji');
+    if (emoji) emoji.textContent = FALLBACK[state] || FALLBACK.sleep;
+  }
+
   function setSleeping() {
-    capyImg.src = SCRIPT_BASE + 'capybara-sleep.png';
+    if (imgFailed) { setEmoji('sleep'); } else { capyImg.src = SCRIPT_BASE + 'capybara-sleep.png'; }
     capyImg.classList.remove('scanning');
     hintEl.textContent = '클릭해서 스캔 시작';
     hintEl.classList.add('show-on-hover');
     hintEl.classList.remove('hidden');
   }
   function setAwake() {
-    capyImg.src = SCRIPT_BASE + 'capybara-awake.png';
+    if (imgFailed) { setEmoji('awake'); } else { capyImg.src = SCRIPT_BASE + 'capybara-awake.png'; }
   }
   function setWarning() {
-    capyImg.src = SCRIPT_BASE + 'capybara-warning.png';
+    if (imgFailed) { setEmoji('warning'); } else { capyImg.src = SCRIPT_BASE + 'capybara-warning.png'; }
     capyImg.classList.remove('scanning');
   }
   function setScanning() {
