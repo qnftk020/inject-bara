@@ -1,11 +1,21 @@
 # InjectScan Comprehensive Research Report
 
 본 문서는 InjectScan 프로젝트의 기술적 근거, 데이터 수집 전략, PMI 학습 결과 및 탐지 고도화를 위한 리서치 내용을 집대성한 종합 보고서입니다.
-
 ---
 
 ## 1. Executive Summary (작업 요약)
 InjectScan은 웹 페이지에 은닉된 프롬프트 인젝션을 탐지하기 위해 **3단계 하이브리드 탐지(Regex + PMI + LLM-as-Judge)** 전략을 채택했습니다. 630개 이상의 공격 코퍼스와 5만 개의 정상 문장을 바탕으로 학습된 통계 모델을 통해, 단순 키워드 매칭을 넘어선 고도화된 탐지 기능을 제공합니다.
+
+### 1.1. Defense in Depth: Multi-Layer Traces
+우리의 보안 모델은 어느 한 레이어가 뚫리더라도 다음 레이어가 방어하는 '심층 방어' 체계를 갖추고 있습니다.
+
+- **Attack A (Visual Concealment)**: 흰색 글씨나 `display:none` 등을 이용한 단순 은닉 공격. **Layer 1 (Static Scan)**에서 즉시 포착됩니다.
+- **Attack B (Imperative Vocabulary)**: 시각적으로는 노출되어 있으나 인젝션 특유의 명령조 시그니처(`ignore previous...`)를 포함한 공격. 정적 필터를 통과하더라도 **Layer 2 (PMI Signatures)**의 통계적 분석에 의해 차단됩니다.
+- **Attack C (Novel/Subtle Variant)**: 기존 패턴이나 시그니처에 잡히지 않는 지능적/변칙적 인젝션. Layer 1, 2를 우회하더라도 최종 단계인 **Layer 3 (LLM Judge)**의 문맥적 의미 분석을 통해 최종 탐지됩니다.
+
+이러한 다층적 구조는 **단일 실패 지점(Single Point of Failure)**을 제거하여 극도로 높은 방어 신뢰도를 보장합니다. (상세 시나리오는 `data/defense_scenario.svg` 참조)
+
+---
 
 ## 2. Corpus Collection Strategy (데이터 수집)
 
