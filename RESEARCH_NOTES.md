@@ -74,5 +74,10 @@ Return your analysis in JSON format:
 - LLM-as-judge is necessary to filter out false positives from PMI.
 - Korean context injections often use polite forms (합쇼체, 해요체) which can mask the command-like nature.
 
-## 6. Backend Blockers
+## 6. Visualization (Tier 3)
+- Generated `data/wordcloud.png` using the top 100 PMI signatures.
+- Notable clusters: "lock_pick", "stock_market", "political_candidate", "instruction_override" variations.
+- Visualization confirms the corpus heavily covers security threats, financial scams, and political misinformation.
+
+## 7. Backend Blockers
 - None reported yet in STATUS.md.
