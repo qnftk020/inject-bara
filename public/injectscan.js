@@ -314,18 +314,26 @@
         showBadge('L2+L3 분석 중...', 'scanning');
         try {
           const serverResults = await scanServer();
-          if (serverResults) {
+          if (serverResults && !serverResults.error) {
             mergeServerResults(clientResults, serverResults);
-            // 패널 + 배지 업데이트
             showBadge('⚠️ ' + lastResults.totalCount + ' found', 'warn');
             openPanel();
+          } else {
+            showNotice('info', '⚡ Layer 1만 실행됨', 'AI 분석 서버에 연결할 수 없어 정적 패턴 검사만 수행했습니다. 정밀 분석은 injectbara.vercel.app에서 다시 시도하세요.');
           }
         } catch (e) {
-          console.warn('[InjectScan] Server scan failed:', e.message);
+          var reason = (e.message || '').toLowerCase();
+          if (reason.includes('timeout') || reason.includes('aborted')) {
+            showNotice('warn', '⏱️ 서버 응답 시간 초과', '페이지가 너무 크거나 서버가 바쁩니다. Layer 1 결과만 표시됩니다.');
+          } else if (reason.includes('failed to fetch') || reason.includes('networkerror')) {
+            showNotice('warn', '🔌 서버 연결 실패', 'AI 분석 서버에 연결할 수 없습니다. 인터넷 연결을 확인하세요.');
+          } else {
+            showNotice('info', '⚡ Layer 1만 실행됨', 'AI 분석 서버 오류: ' + (e.message || '알 수 없는 오류'));
+          }
         }
         // 최종 배지 업데이트
         if (lastResults.totalCount > 0) {
-          const lvl = lastResults.level;
+          var lvl = lastResults.level;
           showBadge(lvl.label + ' · ' + lastResults.totalCount + '건', lvl.key === 'clean' ? 'clean' : 'warn');
         }
       }
@@ -643,6 +651,17 @@
   function hideBadge() {
     const b = widget.querySelector('.badge');
     if (b) b.remove();
+  }
+
+  // 상태 알림 토스트 (접속 불가, 타임아웃 등)
+  function showNotice(type, title, message) {
+    var colors = { info: '#1e40af', warn: '#92400e', error: '#991b1b' };
+    var bgs = { info: '#dbeafe', warn: '#fef3c7', error: '#fee2e2' };
+    var d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:' + (bgs[type] || bgs.info) + ';color:' + (colors[type] || colors.info) + ';padding:16px 24px;border-radius:12px;z-index:2147483647;font-family:-apple-system,sans-serif;max-width:420px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,0.15);text-align:center;border:1px solid ' + (colors[type] || colors.info) + '22';
+    d.innerHTML = '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + title + '</div><div style="font-size:12px;opacity:0.85">' + message + '</div>';
+    document.body.appendChild(d);
+    setTimeout(function () { d.style.transition = 'opacity 0.5s'; d.style.opacity = '0'; setTimeout(function () { d.remove(); }, 500); }, 6000);
   }
 
   let panel = null;

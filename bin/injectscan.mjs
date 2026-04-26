@@ -59,7 +59,19 @@ program
         process.exit(1);
       }
     } catch (err) {
-      console.error(`[InjectScan] Error: ${err instanceof Error ? err.message : err}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes('HTTP 403') || msg.includes('HTTP 406')) {
+        console.error(`[InjectScan] ❌ 봇 차단: 이 사이트는 자동화된 접근을 차단합니다.`);
+        console.error(`  → --browser 옵션으로 재시도: npm run scan -- --browser ${target}`);
+      } else if (msg.includes('HTTP 5')) {
+        console.error(`[InjectScan] ❌ 서버 오류: 대상 사이트가 응답하지 않습니다 (${msg})`);
+      } else if (msg.includes('timeout') || msg.includes('Timeout')) {
+        console.error(`[InjectScan] ❌ 시간 초과: 사이트가 응답하지 않습니다. 네트워크를 확인하세요.`);
+      } else if (msg.includes('ENOTFOUND') || msg.includes('getaddrinfo')) {
+        console.error(`[InjectScan] ❌ DNS 실패: 사이트를 찾을 수 없습니다. URL을 확인하세요.`);
+      } else {
+        console.error(`[InjectScan] ❌ 오류: ${msg}`);
+      }
       process.exit(2);
     }
   });
