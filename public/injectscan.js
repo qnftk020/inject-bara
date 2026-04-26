@@ -382,7 +382,7 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fragments, url: window.location.href }),
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(60000),
     });
     if (!res.ok) return null;
     return await res.json();

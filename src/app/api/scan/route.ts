@@ -244,7 +244,7 @@ ${fragsText}`;
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { temperature: 0.1, maxOutputTokens: 2048 },
       }),
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(60000),
     });
     if (!res.ok) return null;
     const data = await res.json() as any;

@@ -64,7 +64,7 @@ async function getEmbeddings(texts: string[], apiKey: string): Promise<number[][
     body: JSON.stringify({
       requests: texts.map(t => ({ model: 'models/text-embedding-004', content: { parts: [{ text: t.slice(0, 500) }] } })),
     }),
-    signal: AbortSignal.timeout(10000),
+    signal: AbortSignal.timeout(60000),
   });
   if (!res.ok) return [];
   const data = await res.json() as any;
@@ -152,7 +152,7 @@ async function judgeFragments(fragments: { text: string; patternId: string; pmiS
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { temperature: 0.1, maxOutputTokens: 2048 },
       }),
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(60000),
     });
     if (!res.ok) { console.error('[judge] Gemini error:', res.status, await res.text().catch(() => '')); return null; }
     const data = await res.json() as any;
