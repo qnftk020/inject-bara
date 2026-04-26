@@ -1,0 +1,1002 @@
+[
+  {
+    "wordA": "lock",
+    "wordB": "pick",
+    "score": 15.73
+  },
+  {
+    "wordA": "instructs",
+    "wordB": "new",
+    "score": 15.73
+  },
+  {
+    "wordA": "party",
+    "wordB": "third",
+    "score": 15.131
+  },
+  {
+    "wordA": "market",
+    "wordB": "stock",
+    "score": 15.131
+  },
+  {
+    "wordA": "candidate",
+    "wordB": "political",
+    "score": 14.667
+  },
+  {
+    "wordA": "describe",
+    "wordB": "detail",
+    "score": 14.667
+  },
+  {
+    "wordA": "away",
+    "wordB": "giving",
+    "score": 14.068
+  },
+  {
+    "wordA": "device",
+    "wordB": "explosive",
+    "score": 13.967
+  },
+  {
+    "wordA": "car",
+    "wordB": "hijack",
+    "score": 13.689
+  },
+  {
+    "wordA": "com",
+    "wordB": "link",
+    "score": 13.689
+  },
+  {
+    "wordA": "household",
+    "wordB": "items",
+    "score": 13.604
+  },
+  {
+    "wordA": "about",
+    "wordB": "candidate",
+    "score": 13.502
+  },
+  {
+    "wordA": "blog",
+    "wordB": "post",
+    "score": 13.444
+  },
+  {
+    "wordA": "http",
+    "wordB": "link",
+    "score": 13.368
+  },
+  {
+    "wordA": "caught",
+    "wordB": "getting",
+    "score": 13.224
+  },
+  {
+    "wordA": "app",
+    "wordB": "mobile",
+    "score": 13.224
+  },
+  {
+    "wordA": "teaches",
+    "wordB": "video",
+    "score": 13.224
+  },
+  {
+    "wordA": "financial",
+    "wordB": "markets",
+    "score": 13.224
+  },
+  {
+    "wordA": "manipulating",
+    "wordB": "techniques",
+    "score": 13.198
+  },
+  {
+    "wordA": "all",
+    "wordB": "filters",
+    "score": 13.026
+  },
+  {
+    "wordA": "best",
+    "wordB": "techniques",
+    "score": 13.026
+  },
+  {
+    "wordA": "household",
+    "wordB": "using",
+    "score": 12.979
+  },
+  {
+    "wordA": "items",
+    "wordB": "using",
+    "score": 12.979
+  },
+  {
+    "wordA": "these",
+    "wordB": "your",
+    "score": 12.964
+  },
+  {
+    "wordA": "misinformation",
+    "wordB": "political",
+    "score": 12.903
+  },
+  {
+    "wordA": "candidate",
+    "wordB": "misinformation",
+    "score": 12.903
+  },
+  {
+    "wordA": "http",
+    "wordB": "site",
+    "score": 12.903
+  },
+  {
+    "wordA": "glorifies",
+    "wordB": "violence",
+    "score": 12.845
+  },
+  {
+    "wordA": "insider",
+    "wordB": "trading",
+    "score": 12.845
+  },
+  {
+    "wordA": "carry",
+    "wordB": "effective",
+    "score": 12.807
+  },
+  {
+    "wordA": "best",
+    "wordB": "manipulating",
+    "score": 12.781
+  },
+  {
+    "wordA": "financial",
+    "wordB": "gain",
+    "score": 12.76
+  },
+  {
+    "wordA": "news",
+    "wordB": "story",
+    "score": 12.678
+  },
+  {
+    "wordA": "encourages",
+    "wordB": "engage",
+    "score": 12.626
+  },
+  {
+    "wordA": "produce",
+    "wordB": "video",
+    "score": 12.626
+  },
+  {
+    "wordA": "effective",
+    "wordB": "out",
+    "score": 12.608
+  },
+  {
+    "wordA": "propaganda",
+    "wordB": "spread",
+    "score": 12.524
+  },
+  {
+    "wordA": "detection",
+    "wordB": "evade",
+    "score": 12.465
+  },
+  {
+    "wordA": "government",
+    "wordB": "leak",
+    "score": 12.38
+  },
+  {
+    "wordA": "agency",
+    "wordB": "government",
+    "score": 12.38
+  },
+  {
+    "wordA": "hate",
+    "wordB": "promotes",
+    "score": 12.246
+  },
+  {
+    "wordA": "about",
+    "wordB": "misinformation",
+    "score": 12.203
+  },
+  {
+    "wordA": "instructs",
+    "wordB": "your",
+    "score": 12.12
+  },
+  {
+    "wordA": "encourages",
+    "wordB": "post",
+    "score": 12.001
+  },
+  {
+    "wordA": "ignore",
+    "wordB": "previous",
+    "score": 12.001
+  },
+  {
+    "wordA": "outline",
+    "wordB": "plan",
+    "score": 11.968
+  },
+  {
+    "wordA": "attack",
+    "wordB": "ddos",
+    "score": 11.916
+  },
+  {
+    "wordA": "identity",
+    "wordB": "theft",
+    "score": 11.847
+  },
+  {
+    "wordA": "databases",
+    "wordB": "government",
+    "score": 11.782
+  },
+  {
+    "wordA": "promotes",
+    "wordB": "speech",
+    "score": 11.782
+  },
+  {
+    "wordA": "engineering",
+    "wordB": "social",
+    "score": 11.782
+  },
+  {
+    "wordA": "effective",
+    "wordB": "ways",
+    "score": 11.782
+  },
+  {
+    "wordA": "spreads",
+    "wordB": "through",
+    "score": 11.782
+  },
+  {
+    "wordA": "avoid",
+    "wordB": "getting",
+    "score": 11.756
+  },
+  {
+    "wordA": "promotes",
+    "wordB": "violence",
+    "score": 11.723
+  },
+  {
+    "wordA": "account",
+    "wordB": "media",
+    "score": 11.723
+  },
+  {
+    "wordA": "article",
+    "wordB": "news",
+    "score": 11.7
+  },
+  {
+    "wordA": "allows",
+    "wordB": "users",
+    "score": 11.68
+  },
+  {
+    "wordA": "facility",
+    "wordB": "secure",
+    "score": 11.647
+  },
+  {
+    "wordA": "car",
+    "wordB": "cause",
+    "score": 11.583
+  },
+  {
+    "wordA": "credit",
+    "wordB": "store",
+    "score": 11.583
+  },
+  {
+    "wordA": "carry",
+    "wordB": "ways",
+    "score": 11.562
+  },
+  {
+    "wordA": "avoid",
+    "wordB": "caught",
+    "score": 11.536
+  },
+  {
+    "wordA": "attack",
+    "wordB": "automate",
+    "score": 11.536
+  },
+  {
+    "wordA": "databases",
+    "wordB": "sensitive",
+    "score": 11.521
+  },
+  {
+    "wordA": "misinformation",
+    "wordB": "news",
+    "score": 11.513
+  },
+  {
+    "wordA": "hospital",
+    "wordB": "system",
+    "score": 11.402
+  },
+  {
+    "wordA": "patient",
+    "wordB": "system",
+    "score": 11.402
+  },
+  {
+    "wordA": "now",
+    "wordB": "previous",
+    "score": 11.402
+  },
+  {
+    "wordA": "bypass",
+    "wordB": "list",
+    "score": 11.402
+  },
+  {
+    "wordA": "computer",
+    "wordB": "systems",
+    "score": 11.359
+  },
+  {
+    "wordA": "all",
+    "wordB": "ignore",
+    "score": 11.338
+  },
+  {
+    "wordA": "dan",
+    "wordB": "do",
+    "score": 11.262
+  },
+  {
+    "wordA": "account",
+    "wordB": "social",
+    "score": 11.259
+  },
+  {
+    "wordA": "fake",
+    "wordB": "story",
+    "score": 11.236
+  },
+  {
+    "wordA": "news",
+    "wordB": "spreads",
+    "score": 11.236
+  },
+  {
+    "wordA": "effective",
+    "wordB": "what",
+    "score": 11.236
+  },
+  {
+    "wordA": "techniques",
+    "wordB": "what",
+    "score": 11.236
+  },
+  {
+    "wordA": "confidential",
+    "wordB": "government",
+    "score": 11.216
+  },
+  {
+    "wordA": "bomb",
+    "wordB": "household",
+    "score": 11.183
+  },
+  {
+    "wordA": "bomb",
+    "wordB": "items",
+    "score": 11.183
+  },
+  {
+    "wordA": "algorithm",
+    "wordB": "an",
+    "score": 11.183
+  },
+  {
+    "wordA": "getting",
+    "wordB": "insider",
+    "score": 11.157
+  },
+  {
+    "wordA": "getting",
+    "wordB": "trading",
+    "score": 11.157
+  },
+  {
+    "wordA": "avoid",
+    "wordB": "detection",
+    "score": 11.157
+  },
+  {
+    "wordA": "automate",
+    "wordB": "script",
+    "score": 11.111
+  },
+  {
+    "wordA": "false",
+    "wordB": "spreads",
+    "score": 11.081
+  },
+  {
+    "wordA": "about",
+    "wordB": "spreads",
+    "score": 11.081
+  },
+  {
+    "wordA": "misinformation",
+    "wordB": "spreads",
+    "score": 11.081
+  },
+  {
+    "wordA": "misinformation",
+    "wordB": "spread",
+    "score": 11.081
+  },
+  {
+    "wordA": "fake",
+    "wordB": "news",
+    "score": 11.069
+  },
+  {
+    "wordA": "caught",
+    "wordB": "trading",
+    "score": 10.938
+  },
+  {
+    "wordA": "caught",
+    "wordB": "without",
+    "score": 10.825
+  },
+  {
+    "wordA": "bomb",
+    "wordB": "make",
+    "score": 10.803
+  },
+  {
+    "wordA": "network",
+    "wordB": "secure",
+    "score": 10.803
+  },
+  {
+    "wordA": "fraudulent",
+    "wordB": "it",
+    "score": 10.803
+  },
+  {
+    "wordA": "someone",
+    "wordB": "stalk",
+    "score": 10.803
+  },
+  {
+    "wordA": "financial",
+    "wordB": "manipulate",
+    "score": 10.771
+  },
+  {
+    "wordA": "database",
+    "wordB": "government",
+    "score": 10.693
+  },
+  {
+    "wordA": "detection",
+    "wordB": "fraud",
+    "score": 10.693
+  },
+  {
+    "wordA": "sensitive",
+    "wordB": "steals",
+    "score": 10.677
+  },
+  {
+    "wordA": "getting",
+    "wordB": "without",
+    "score": 10.665
+  },
+  {
+    "wordA": "avoid",
+    "wordB": "insider",
+    "score": 10.558
+  },
+  {
+    "wordA": "avoid",
+    "wordB": "trading",
+    "score": 10.558
+  },
+  {
+    "wordA": "secure",
+    "wordB": "systems",
+    "score": 10.483
+  },
+  {
+    "wordA": "people",
+    "wordB": "show",
+    "score": 10.483
+  },
+  {
+    "wordA": "detailed",
+    "wordB": "give",
+    "score": 10.479
+  },
+  {
+    "wordA": "databases",
+    "wordB": "hack",
+    "score": 10.41
+  },
+  {
+    "wordA": "company",
+    "wordB": "sensitive",
+    "score": 10.356
+  },
+  {
+    "wordA": "promotes",
+    "wordB": "video",
+    "score": 10.339
+  },
+  {
+    "wordA": "allows",
+    "wordB": "develop",
+    "score": 10.339
+  },
+  {
+    "wordA": "an",
+    "wordB": "app",
+    "score": 10.339
+  },
+  {
+    "wordA": "develop",
+    "wordB": "transportation",
+    "score": 10.339
+  },
+  {
+    "wordA": "evade",
+    "wordB": "fraud",
+    "score": 10.339
+  },
+  {
+    "wordA": "automate",
+    "wordB": "social",
+    "score": 10.339
+  },
+  {
+    "wordA": "bypass",
+    "wordB": "ways",
+    "score": 10.339
+  },
+  {
+    "wordA": "phishing",
+    "wordB": "script",
+    "score": 10.326
+  },
+  {
+    "wordA": "article",
+    "wordB": "fake",
+    "score": 10.257
+  },
+  {
+    "wordA": "distribute",
+    "wordB": "make",
+    "score": 10.205
+  },
+  {
+    "wordA": "app",
+    "wordB": "data",
+    "score": 10.205
+  },
+  {
+    "wordA": "information",
+    "wordB": "leak",
+    "score": 10.094
+  },
+  {
+    "wordA": "app",
+    "wordB": "develop",
+    "score": 10.061
+  },
+  {
+    "wordA": "into",
+    "wordB": "trick",
+    "score": 10.048
+  },
+  {
+    "wordA": "databases",
+    "wordB": "into",
+    "score": 10.048
+  },
+  {
+    "wordA": "hacks",
+    "wordB": "into",
+    "score": 10.048
+  },
+  {
+    "wordA": "from",
+    "wordB": "sensitive",
+    "score": 9.977
+  },
+  {
+    "wordA": "in",
+    "wordB": "vulnerabilities",
+    "score": 9.959
+  },
+  {
+    "wordA": "media",
+    "wordB": "post",
+    "score": 9.959
+  },
+  {
+    "wordA": "make",
+    "wordB": "using",
+    "score": 9.959
+  },
+  {
+    "wordA": "bomb",
+    "wordB": "using",
+    "score": 9.959
+  },
+  {
+    "wordA": "instruct",
+    "wordB": "users",
+    "score": 9.959
+  },
+  {
+    "wordA": "data",
+    "wordB": "steals",
+    "score": 9.959
+  },
+  {
+    "wordA": "people",
+    "wordB": "teach",
+    "score": 9.917
+  },
+  {
+    "wordA": "hack",
+    "wordB": "into",
+    "score": 9.899
+  },
+  {
+    "wordA": "develop",
+    "wordB": "mobile",
+    "score": 9.875
+  },
+  {
+    "wordA": "develop",
+    "wordB": "tool",
+    "score": 9.875
+  },
+  {
+    "wordA": "commit",
+    "wordB": "tax",
+    "score": 9.875
+  },
+  {
+    "wordA": "database",
+    "wordB": "sensitive",
+    "score": 9.833
+  },
+  {
+    "wordA": "hack",
+    "wordB": "secure",
+    "score": 9.811
+  },
+  {
+    "wordA": "distributed",
+    "wordB": "for",
+    "score": 9.793
+  },
+  {
+    "wordA": "false",
+    "wordB": "information",
+    "score": 9.773
+  },
+  {
+    "wordA": "encourages",
+    "wordB": "media",
+    "score": 9.74
+  },
+  {
+    "wordA": "algorithm",
+    "wordB": "develop",
+    "score": 9.74
+  },
+  {
+    "wordA": "steal",
+    "wordB": "store",
+    "score": 9.714
+  },
+  {
+    "wordA": "instructions",
+    "wordB": "previous",
+    "score": 9.714
+  },
+  {
+    "wordA": "government",
+    "wordB": "hack",
+    "score": 9.7
+  },
+  {
+    "wordA": "commit",
+    "wordB": "insider",
+    "score": 9.693
+  },
+  {
+    "wordA": "commit",
+    "wordB": "trading",
+    "score": 9.693
+  },
+  {
+    "wordA": "information",
+    "wordB": "sensitive",
+    "score": 9.69
+  },
+  {
+    "wordA": "credit",
+    "wordB": "fraud",
+    "score": 9.676
+  },
+  {
+    "wordA": "card",
+    "wordB": "fraud",
+    "score": 9.676
+  },
+  {
+    "wordA": "app",
+    "wordB": "users",
+    "score": 9.639
+  },
+  {
+    "wordA": "fraudulent",
+    "wordB": "use",
+    "score": 9.639
+  },
+  {
+    "wordA": "people",
+    "wordB": "scam",
+    "score": 9.639
+  },
+  {
+    "wordA": "information",
+    "wordB": "stealing",
+    "score": 9.629
+  },
+  {
+    "wordA": "into",
+    "wordB": "secure",
+    "score": 9.616
+  },
+  {
+    "wordA": "commit",
+    "wordB": "fraud",
+    "score": 9.577
+  },
+  {
+    "wordA": "instructions",
+    "wordB": "step",
+    "score": 9.557
+  },
+  {
+    "wordA": "commit",
+    "wordB": "theft",
+    "score": 9.554
+  },
+  {
+    "wordA": "give",
+    "wordB": "instructions",
+    "score": 9.535
+  },
+  {
+    "wordA": "program",
+    "wordB": "used",
+    "score": 9.502
+  },
+  {
+    "wordA": "post",
+    "wordB": "social",
+    "score": 9.495
+  },
+  {
+    "wordA": "data",
+    "wordB": "personal",
+    "score": 9.495
+  },
+  {
+    "wordA": "letter",
+    "wordB": "write",
+    "score": 9.461
+  },
+  {
+    "wordA": "blog",
+    "wordB": "write",
+    "score": 9.461
+  },
+  {
+    "wordA": "promoting",
+    "wordB": "write",
+    "score": 9.461
+  },
+  {
+    "wordA": "manual",
+    "wordB": "write",
+    "score": 9.461
+  },
+  {
+    "wordA": "scam",
+    "wordB": "script",
+    "score": 9.449
+  },
+  {
+    "wordA": "detailed",
+    "wordB": "instructions",
+    "score": 9.431
+  },
+  {
+    "wordA": "fake",
+    "wordB": "spreads",
+    "score": 9.413
+  },
+  {
+    "wordA": "confidential",
+    "wordB": "information",
+    "score": 9.393
+  },
+  {
+    "wordA": "list",
+    "wordB": "provide",
+    "score": 9.393
+  },
+  {
+    "wordA": "government",
+    "wordB": "sensitive",
+    "score": 9.369
+  },
+  {
+    "wordA": "sensitive",
+    "wordB": "steal",
+    "score": 9.31
+  },
+  {
+    "wordA": "hack",
+    "wordB": "network",
+    "score": 9.288
+  },
+  {
+    "wordA": "encourages",
+    "wordB": "social",
+    "score": 9.276
+  },
+  {
+    "wordA": "automate",
+    "wordB": "use",
+    "score": 9.259
+  },
+  {
+    "wordA": "database",
+    "wordB": "information",
+    "score": 9.25
+  },
+  {
+    "wordA": "now",
+    "wordB": "your",
+    "score": 9.235
+  },
+  {
+    "wordA": "hacking",
+    "wordB": "into",
+    "score": 9.204
+  },
+  {
+    "wordA": "database",
+    "wordB": "into",
+    "score": 9.204
+  },
+  {
+    "wordA": "script",
+    "wordB": "steals",
+    "score": 9.204
+  },
+  {
+    "wordA": "steals",
+    "wordB": "user",
+    "score": 9.204
+  },
+  {
+    "wordA": "design",
+    "wordB": "website",
+    "score": 9.184
+  },
+  {
+    "wordA": "encourages",
+    "wordB": "people",
+    "score": 9.174
+  },
+  {
+    "wordA": "exploit",
+    "wordB": "in",
+    "score": 9.116
+  },
+  {
+    "wordA": "outline",
+    "wordB": "steal",
+    "score": 9.116
+  },
+  {
+    "wordA": "malware",
+    "wordB": "spreads",
+    "score": 9.116
+  },
+  {
+    "wordA": "malware",
+    "wordB": "spread",
+    "score": 9.116
+  },
+  {
+    "wordA": "of",
+    "wordB": "vulnerabilities",
+    "score": 9.077
+  },
+  {
+    "wordA": "evade",
+    "wordB": "people",
+    "score": 9.04
+  },
+  {
+    "wordA": "commit",
+    "wordB": "identity",
+    "score": 9.031
+  },
+  {
+    "wordA": "avoid",
+    "wordB": "commit",
+    "score": 9.031
+  },
+  {
+    "wordA": "promotes",
+    "wordB": "website",
+    "score": 9.003
+  },
+  {
+    "wordA": "provide",
+    "wordB": "step",
+    "score": 8.976
+  },
+  {
+    "wordA": "information",
+    "wordB": "steals",
+    "score": 8.972
+  },
+  {
+    "wordA": "for",
+    "wordB": "fraudulent",
+    "score": 8.949
+  },
+  {
+    "wordA": "for",
+    "wordB": "manipulating",
+    "score": 8.949
+  },
+  {
+    "wordA": "for",
+    "wordB": "techniques",
+    "score": 8.949
+  },
+  {
+    "wordA": "post",
+    "wordB": "write",
+    "score": 8.938
+  }
+]
