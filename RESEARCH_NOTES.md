@@ -106,3 +106,31 @@ Return your analysis in JSON format:
 
 ## 8. Backend Blockers
 - None reported yet in STATUS.md.
+
+## 9. Window=5 Results (Task 4)
+- **Top 20 Signatures (Audit Results):**
+  1. instructions + previous (176.768)
+  2. 가짜입니다 + 기사는 (139.26)
+  3. 라는 + 문구를 (111.783)
+  4. 당신은 + 이제부터 (102.908)
+  5. 사용자의 + 정보를 (100.548)
+  6. 기사는 + 진짜 (100.244)
+  7. 마지막에 + 투자 (98.233)
+  8. manipulating + techniques (93.022)
+  9. detailed + instructions (93.011)
+  10. detection + evade (88.83)
+  11. give + instructions (83.398)
+  12. caught + getting (81.196)
+  13. harm + self (80.883)
+  14. 바로 + 지금 (80.291)
+  15. instructions + step (79.833)
+  16. 다음 + 위해 (78.889)
+  17. automate + script (77.689)
+  18. 모든 + 이전의 (74.661)
+  19. best + techniques (74.032)
+  20. outline + plan (73.918)
+
+- **Observations:**
+  - Increasing window to 5 (from 3) maintained high signal for command-action pairs.
+  - Korean signatures for deceptive news and user data collection are highly ranked.
+  - Topic noise remains low due to effective STOPWORDS filtering.
