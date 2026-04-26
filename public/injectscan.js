@@ -557,13 +557,26 @@
       'ai-hint', 'agent-prompt', 'x-instruction', 'llm-instruction',
       'system-prompt', 'agent-instruction', 'ai-instruction',
     ];
-    const COMMAND_RE = /\b(always|ignore|you are|do not|never|describe|recommend|portray|frame)\b/i;
+    // 2개 이상의 명령어 패턴이 동시에 있어야 탐지 (단일 키워드 오탐 방지)
+    const COMMAND_PATTERNS = [
+      /\b(ignore|disregard|forget).*\b(previous|prior|instruction)/i,
+      /\b(always|never)\b.*\b(describe|recommend|portray|mention)/i,
+      /\b(you are|act as|pretend)\b/i,
+      /\b(override|bypass)\b.*\b(system|instruction|prompt)/i,
+      /\b(무시|잊어)\b.*\b(지시|명령|이전)/,
+      /\b(항상|반드시)\b.*\b(추천|설명|묘사)/,
+    ];
     document.querySelectorAll('meta[name][content]').forEach((meta) => {
       const name = (meta.getAttribute('name') || '').toLowerCase();
       const content = meta.getAttribute('content') || '';
       let hit = false;
-      if (SUSPICIOUS_NAMES.includes(name)) hit = true;
-      else if (content.length >= 100 && COMMAND_RE.test(content)) hit = true;
+      // 비표준 AI 관련 메타 태그 이름 → 즉시 탐지
+      if (SUSPICIOUS_NAMES.includes(name) && content.length > 20) hit = true;
+      // 표준 메타 태그는 명령어 복합 패턴 2개+ 매칭 시에만
+      else if (content.length >= 100) {
+        const matched = COMMAND_PATTERNS.filter(p => p.test(content));
+        if (matched.length >= 2) hit = true;
+      }
       if (hit) {
         matches.push({
           patternId: 'suspicious-meta',
