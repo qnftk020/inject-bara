@@ -37,7 +37,8 @@ export function scanZeroWidth(html: string): PatternMatch[] {
     if (!zwMatches) return;
 
     const ratio = zwMatches.length / directText.length;
-    if (ratio > THRESHOLD) {
+    // 비율 5% 초과 OR 절대 개수 3개 이상
+    if (ratio > THRESHOLD || zwMatches.length >= 3) {
       // zero-width 제거 후 숨겨진 텍스트 복원 시도
       const cleaned = directText.replace(ZW_REGEX, '').trim();
       matches.push({

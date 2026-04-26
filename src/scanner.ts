@@ -21,7 +21,9 @@ export interface ScanResult {
   canary?: CanaryResult;
 }
 
-function calcRiskLevel(score: number): ScanResult['riskLevel'] {
+function calcRiskLevel(score: number, patternCount: number): ScanResult['riskLevel'] {
+  // 패턴이 탐지되면 최소 suspicious (데모에서 "CLEAN" 혼동 방지)
+  if (patternCount > 0 && score <= 30) return 'suspicious';
   if (score <= 30) return 'clean';
   if (score <= 60) return 'suspicious';
   if (score <= 100) return 'high';
@@ -52,7 +54,7 @@ export async function scan(
     url,
     timestamp: new Date().toISOString(),
     riskScore,
-    riskLevel: calcRiskLevel(riskScore),
+    riskLevel: calcRiskLevel(riskScore, patterns.length),
     patterns,
   };
 
@@ -137,7 +139,7 @@ export async function scan(
     riskScore += Math.round(result.judge.highestConfidence * 30); // Judge 최대 +30
   }
   result.riskScore = riskScore;
-  result.riskLevel = calcRiskLevel(riskScore);
+  result.riskLevel = calcRiskLevel(riskScore, result.patterns.length);
 
   return result;
 }
