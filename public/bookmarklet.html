@@ -551,10 +551,6 @@
       <span class="callout-sub">클릭이 아니에요. 마우스로 잡고 위쪽 북마크바로 끌어 놓기.</span>
       <div class="drag-arrow">↑</div>
       <a id="bm-link" class="bm-link" href="#" draggable="true">🦫 인젝바라</a>
-      <div style="margin-top:12px;">
-        <a id="bm-link-csp" class="bm-link" href="#" draggable="true" style="background:linear-gradient(135deg,#6366f1 0%,#4f46e5 100%);box-shadow:0 8px 20px rgba(99,102,241,0.35);font-size:14px;padding:14px 24px;">🦫 인젝바라 (호환 모드)</a>
-      </div>
-      <span style="display:block;margin-top:8px;font-size:11px;color:var(--ink-muted);">위 버튼이 안 되는 사이트는 보라색 호환 모드를 쓰세요</span>
       <span class="shortcut">
         북마크바 안 보이면<br>
         <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Mac) · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Win)
@@ -715,10 +711,6 @@
       const bmCode = "javascript:(function(){var s=document.createElement('script');s.src='" + DEPLOY_URL + "/injectscan.js?'+Date.now();document.body.appendChild(s);})();";
       document.getElementById('bm-link').setAttribute('href', bmCode);
       document.getElementById('bm-code').textContent = bmCode;
-
-      // 방식 2: fetch+eval (CSP가 script-src를 차단하는 사이트용)
-      const bmCodeCSP = "javascript:void(fetch('" + DEPLOY_URL + "/injectscan.js?'+Date.now()).then(r=>r.text()).then(t=>new Function(t)()).catch(e=>alert('InjectScan load failed: '+e.message)));";
-      document.getElementById('bm-link-csp').setAttribute('href', bmCodeCSP);
 
       // Hero capybara state cycle
       const states = [
