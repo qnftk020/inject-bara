@@ -15,8 +15,9 @@
   },
   "dependencies": {
     "chalk": "^5.4.1",
-    "cheerio": "^1.0.0",
+    "cheerio": "^1.2.0",
     "commander": "^13.1.0",
+    "dotenv": "^17.4.2",
     "next": "16.2.4",
     "react": "19.2.4",
     "react-dom": "19.2.4"
