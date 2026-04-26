@@ -45,10 +45,13 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
+      cursor: grab;
     }
+    #${WIDGET_ID}.dragging { cursor: grabbing; }
     #${WIDGET_ID} .capy {
-      width: 110px;
-      height: auto;
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
       cursor: pointer;
       display: block;
       image-rendering: pixelated;
@@ -60,8 +63,8 @@
       background: #fff;
       border: 2px solid;
       border-radius: 14px;
-      padding: 5px 12px;
-      font-size: 0.78rem;
+      padding: 4px 10px;
+      font-size: 12px;
       font-weight: 700;
       white-space: nowrap;
       cursor: pointer;
@@ -74,7 +77,7 @@
     #${WIDGET_ID} .hint {
       background: rgba(0,0,0,0.85);
       color: #fff;
-      font-size: 0.72rem;
+      font-size: 11px;
       padding: 4px 10px;
       border-radius: 6px;
       white-space: nowrap;
@@ -118,8 +121,8 @@
       background: #fafafa;
       border-radius: 12px 12px 0 0;
     }
-    #${PANEL_ID} .panel-header strong { font-size: 1rem; }
-    #${PANEL_ID} .panel-header .meta { color: #666; font-size: 0.85rem; margin-left: 8px; }
+    #${PANEL_ID} .panel-header strong { font-size: 14px; }
+    #${PANEL_ID} .panel-header .meta { color: #666; font-size: 12px; margin-left: 8px; }
     #${PANEL_ID} .panel-header .close { cursor: pointer; color: #999; font-size: 1.1rem; }
     #${PANEL_ID} .panel-body { padding: 16px 20px; }
     #${PANEL_ID} .match-card {
@@ -132,24 +135,24 @@
     #${PANEL_ID} .match-card .pattern {
       font-weight: 700;
       color: #92400e;
-      font-size: 0.9rem;
+      font-size: 13px;
     }
     #${PANEL_ID} .match-card .pattern .severity {
       background: #f59e0b;
       color: #fff;
       padding: 2px 6px;
       border-radius: 8px;
-      font-size: 0.7rem;
+      font-size: 10px;
       margin-left: 6px;
     }
     #${PANEL_ID} .match-card .loc {
-      font-size: 0.8rem;
+      font-size: 11px;
       color: #6b7280;
       margin-top: 4px;
       font-family: ui-monospace, monospace;
     }
     #${PANEL_ID} .match-card .text {
-      font-size: 0.85rem;
+      font-size: 12px;
       color: #1a1a1a;
       margin-top: 8px;
       padding: 8px;
@@ -174,7 +177,7 @@
       background: #fff;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 12px;
       font-weight: 600;
     }
     #${PANEL_ID} .panel-actions button:hover { background: #f3f4f6; }
@@ -232,7 +235,7 @@
       border-radius: 12px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.25);
       font-family: -apple-system, sans-serif;
-      font-size: 0.9rem;
+      font-size: 13px;
       z-index: 2147483645;
       max-width: 480px;
       line-height: 1.5;
@@ -240,10 +243,11 @@
     #__injectscan-toast .toast-title {
       font-weight: 700;
       color: #fbbf24;
+      font-size: 13px;
       margin-bottom: 4px;
     }
     #__injectscan-toast .toast-item {
-      font-size: 0.82rem;
+      font-size: 11px;
       color: #d1d5db;
       margin-top: 2px;
       font-family: ui-monospace, monospace;
@@ -282,6 +286,75 @@
     setAwake();
     capyImg.classList.add('scanning');
   }
+
+  // ==== Drag to reposition ====
+  let isDragging = false;
+  let dragStartX, dragStartY, widgetStartX, widgetStartY;
+  let hasDragged = false;
+
+  widget.addEventListener('mousedown', function (e) {
+    if (e.target === capyImg) return; // click은 capy에서 처리
+    isDragging = true;
+    hasDragged = false;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    const rect = widget.getBoundingClientRect();
+    widgetStartX = rect.left;
+    widgetStartY = rect.top;
+    widget.classList.add('dragging');
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', function (e) {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasDragged = true;
+    widget.style.left = (widgetStartX + dx) + 'px';
+    widget.style.top = (widgetStartY + dy) + 'px';
+    widget.style.right = 'auto';
+    widget.style.bottom = 'auto';
+  });
+
+  document.addEventListener('mouseup', function () {
+    if (isDragging) {
+      isDragging = false;
+      widget.classList.remove('dragging');
+    }
+  });
+
+  // Touch support for mobile
+  widget.addEventListener('touchstart', function (e) {
+    if (e.target === capyImg) return;
+    isDragging = true;
+    hasDragged = false;
+    const touch = e.touches[0];
+    dragStartX = touch.clientX;
+    dragStartY = touch.clientY;
+    const rect = widget.getBoundingClientRect();
+    widgetStartX = rect.left;
+    widgetStartY = rect.top;
+    widget.classList.add('dragging');
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function (e) {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - dragStartX;
+    const dy = touch.clientY - dragStartY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasDragged = true;
+    widget.style.left = (widgetStartX + dx) + 'px';
+    widget.style.top = (widgetStartY + dy) + 'px';
+    widget.style.right = 'auto';
+    widget.style.bottom = 'auto';
+  }, { passive: true });
+
+  document.addEventListener('touchend', function () {
+    if (isDragging) {
+      isDragging = false;
+      widget.classList.remove('dragging');
+    }
+  });
 
   capyImg.addEventListener('click', function () {
     if (currentState === STATE.IDLE) {
