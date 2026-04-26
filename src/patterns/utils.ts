@@ -1,4 +1,5 @@
-import type { CheerioAPI, Element } from 'cheerio';
+import type { CheerioAPI } from 'cheerio';
+type Element = any;
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
