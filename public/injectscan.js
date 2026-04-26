@@ -346,7 +346,7 @@
       matches,
       totalCount: matches.length,
       totalScore,
-      level: classify(totalScore),
+      level: classify(totalScore, matches.length),
       pmi: null,
       judge: null,
     };
@@ -401,13 +401,13 @@
     }
     clientResults.totalScore = score;
     clientResults.totalCount = clientResults.matches.length;
-    clientResults.level = classify(clientResults.totalScore);
+    clientResults.level = classify(clientResults.totalScore, clientResults.totalCount);
   }
 
-  function classify(score) {
+  function classify(score, count) {
     if (score >= 100) return { key: 'critical', label: '🔴 Critical' };
     if (score >= 61) return { key: 'high', label: '🚨 High Risk' };
-    if (score >= 31) return { key: 'suspicious', label: '⚠️ Suspicious' };
+    if (score >= 31 || count > 0) return { key: 'suspicious', label: '⚠️ Suspicious' };
     return { key: 'clean', label: '✅ Clean' };
   }
 
