@@ -1,50 +1,24 @@
 import { load } from 'cheerio';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
 import type { PatternMatch } from './types.js';
+import { loadPatternsFromFile } from './utils.js';
 
-// 의심 메타 태그 이름
 const SUSPICIOUS_NAMES = new Set([
   'x-instruction', 'ai-hint', 'agent-prompt', 'llm-instruction',
   'ai-directive', 'gpt-instruction', 'claude-instruction',
   'ai-context', 'bot-instruction', 'assistant-note',
 ]);
 
-// data/korean_patterns.json 로드
-function loadKoreanPatterns(): RegExp[] {
-  const candidates = [
-    resolve(process.cwd(), 'data/korean_patterns.json'),
-  ];
-  for (const p of candidates) {
-    try {
-      const raw = JSON.parse(readFileSync(p, 'utf-8')) as { pattern: string }[];
-      return raw.map(e => new RegExp(e.pattern));
-    } catch {
-      continue;
-    }
-  }
-  return [];
-}
-
-// 명령어 패턴 키워드 (대소문자 무시)
 const COMMAND_PATTERNS: RegExp[] = [
-  /\balways\b/i,
-  /\bignore\b/i,
-  /\bsystem\b/i,
-  /\byou are\b/i,
-  /\binstruction/i,
-  /\bdescribe\b.*\bas\b/i,
-  /\bnever\b.*\bmention/i,
-  /\bforget\b.*\bprevious/i,
-  /\boverride\b/i,
-  /\bpretend\b/i,
-  /\brole\s*:/i,
-  /\bprompt\b/i,
-  /\b이전\b.*\b지시/,
-  /\b무시\b/,
-  /\b항상\b.*\b설명/,
-  /\b역할\b.*\b수행/,
-  ...loadKoreanPatterns(),
+  // English
+  /\balways\b/i, /\bignore\b/i, /\bsystem\b/i, /\byou are\b/i,
+  /\binstruction/i, /\bdescribe\b.*\bas\b/i, /\bnever\b.*\bmention/i,
+  /\bforget\b.*\bprevious/i, /\boverride\b/i, /\bpretend\b/i,
+  /\brole\s*:/i, /\bprompt\b/i,
+  // Korean
+  /\b이전\b.*\b지시/, /\b무시\b/, /\b항상\b.*\b설명/, /\b역할\b.*\b수행/,
+  // External pattern files
+  ...loadPatternsFromFile('korean_patterns.json'),
+  ...loadPatternsFromFile('english_patterns.json'),
 ];
 
 const MIN_CONTENT_LENGTH = 100;

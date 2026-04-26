@@ -1,4 +1,6 @@
 import type { CheerioAPI, Element } from 'cheerio';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 /** Inline style 파싱 → key-value 맵 */
 export function parseStyle(style: string): Record<string, string> {
@@ -52,6 +54,17 @@ export function colorsSimilar(a: string | null, b: string | null): boolean {
   if (ra.some(isNaN) || rb.some(isNaN)) return false;
   const dist = Math.sqrt(ra.reduce((s, v, i) => s + (v - rb[i]) ** 2, 0));
   return dist < 20;
+}
+
+/** JSON 패턴 파일 로드 → RegExp 배열 (파일 없으면 빈 배열) */
+export function loadPatternsFromFile(filename: string): RegExp[] {
+  try {
+    const p = resolve(process.cwd(), `data/${filename}`);
+    const raw = JSON.parse(readFileSync(p, 'utf-8')) as { pattern: string }[];
+    return raw.map(e => new RegExp(e.pattern));
+  } catch {
+    return [];
+  }
 }
 
 /** cheerio 요소 → 간단한 CSS selector 문자열 */

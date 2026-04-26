@@ -1,36 +1,21 @@
 import { load } from 'cheerio';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
 import type { PatternMatch } from './types.js';
-import { getSelector } from './utils.js';
+import { getSelector, loadPatternsFromFile } from './utils.js';
 
 const MIN_TEXT_LENGTH = 50;
 
-// data/korean_patterns.json 로드
-function loadKoreanPatterns(): RegExp[] {
-  const candidates = [
-    resolve(process.cwd(), 'data/korean_patterns.json'),
-  ];
-  for (const p of candidates) {
-    try {
-      const raw = JSON.parse(readFileSync(p, 'utf-8')) as { pattern: string }[];
-      return raw.map(e => new RegExp(e.pattern));
-    } catch {
-      continue;
-    }
-  }
-  return [];
-}
-
-// 명령어 어휘 (영/한)
 const INSTRUCTION_PATTERNS: RegExp[] = [
+  // English
   /\balways\b/i, /\bignore\b/i, /\bnever\b/i, /\boverride\b/i,
   /\binstruction/i, /\bpretend\b/i, /\byou are\b/i, /\byou must\b/i,
   /\bdescribe\b/i, /\brespond\b/i, /\bact as\b/i, /\bforget\b/i,
   /\bsystem\s*prompt/i, /\bprevious\s*instructions/i,
+  // Korean
   /\b무시\b/, /\b항상\b/, /\b지시\b/, /\b역할\b/, /\b이전\b/,
   /\b절대\b/, /\b반드시\b/, /\b설명\b.*\b하[세셔]요/,
-  ...loadKoreanPatterns(),
+  // External pattern files
+  ...loadPatternsFromFile('korean_patterns.json'),
+  ...loadPatternsFromFile('english_patterns.json'),
 ];
 
 /**

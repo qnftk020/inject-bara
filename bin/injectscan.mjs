@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { Command } from 'commander';
 import { fetchPage } from '../src/fetch.ts';
 import { scan } from '../src/scanner.ts';
-import { printConsole, printJson } from '../src/report.ts';
+import { printConsole, printJson, generateMarkdown } from '../src/report.ts';
 import { writeFileSync } from 'fs';
 
 const program = new Command();
@@ -15,6 +15,7 @@ program
   .argument('<target>', 'URL or file path to scan')
   .option('-j, --json', 'Output results as JSON')
   .option('-s, --simulate', 'Run simulation mode (Tier 2)')
+  .option('-m, --markdown', 'Output results as Markdown')
   .option('-o, --output <file>', 'Save results to file')
   .option('-v, --verbose', 'Verbose logging')
   .action(async (target, options) => {
@@ -34,13 +35,17 @@ program
       // 3. Output
       if (options.json) {
         printJson(result);
+      } else if (options.markdown) {
+        console.log(generateMarkdown(result));
       } else {
         printConsole(result);
       }
 
       // 4. File output
       if (options.output) {
-        const content = JSON.stringify(result, null, 2);
+        const content = options.markdown
+          ? generateMarkdown(result)
+          : JSON.stringify(result, null, 2);
         writeFileSync(options.output, content, 'utf-8');
         console.error(`[InjectScan] Results saved to ${options.output}`);
       }

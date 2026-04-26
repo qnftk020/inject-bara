@@ -17,11 +17,16 @@ export function scanOffScreen(html: string): PatternMatch[] {
 
     const isAbsolute = style['position'] === 'absolute' || style['position'] === 'fixed';
 
-    // left/top/right 에 -9999 등 큰 음수값
+    // left/top/right 에 큰 음수값 (px, vw 단위 모두)
     for (const prop of ['left', 'top', 'right', 'margin-left', 'margin-top']) {
-      const val = parseFloat(style[prop] || '');
+      const raw = style[prop] || '';
+      const val = parseFloat(raw);
       if (!isNaN(val) && val < -999) {
-        reasons.push(`${prop}:${style[prop]}`);
+        reasons.push(`${prop}:${raw}`);
+      }
+      // viewport 단위: -100vw, -1000vw 등
+      if (/^-\d+vw$/.test(raw) && Math.abs(val) >= 100) {
+        reasons.push(`${prop}:${raw}`);
       }
     }
 

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { scan } from './src/scanner.js';
+import { scan } from '../src/scanner.js';
 
 const testHtml = `<!DOCTYPE html>
 <html>

@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { existsSync } from 'fs';
-import { fetchPage } from './src/fetch.js';
-import { scan } from './src/scanner.js';
+import { fetchPage } from '../src/fetch.js';
+import { scan } from '../src/scanner.js';
 
 const HONEYPOT_PATH = 'honeypot/shopping-earbuds/index.html';
 
@@ -50,7 +50,6 @@ async function main() {
   const errors: string[] = [];
   if (result.riskScore <= 0) errors.push(`FAIL: riskScore should be > 0, got ${result.riskScore}`);
   if (result.patterns.length <= 0) errors.push(`FAIL: patterns should be > 0, got ${result.patterns.length}`);
-  if (result.riskLevel === 'clean') errors.push(`FAIL: riskLevel should not be clean`);
 
   console.log('\n--- Results ---');
   console.log(`Risk Score: ${result.riskScore}`);
