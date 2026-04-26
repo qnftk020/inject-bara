@@ -1,7 +1,7 @@
 import type { PatternMatch } from './patterns/types.js';
 import { ALL_SCANNERS } from './patterns/index.js';
 import { matchPmi, type PmiResult } from './pmi/match.js';
-import { judge, simulate, simulateCanary, hasApiKey, type JudgeResult, type SimResult, type CanaryResult } from './judge.js';
+import { judge, simulate, simulateCanary, hasApiKey, type JudgeResult, type SimResult, type CanaryResult, type EnrichedFragment } from './judge.js';
 
 export interface ScanOptions {
   json?: boolean;
@@ -78,14 +78,27 @@ export async function scan(
     }
   }
 
-  // === Layer 3: LLM-as-Judge ===
+  // === Layer 3: LLM-as-Judge (PMI 결과를 context로 전달) ===
   if (!hasApiKey()) {
     if (options?.verbose) {
       console.error(`[scanner] GEMINI_API_KEY not set — Layer 3 (LLM-as-judge) skipped`);
     }
   } else {
     try {
-      const judgeResult = await judge(extractedTexts);
+      // PMI 결과를 enriched fragments로 구성하여 Judge에 전달
+      const enrichedFragments: EnrichedFragment[] = patterns.map(p => {
+        // 해당 fragment의 PMI 매칭 확인
+        const fragPmi = result.pmi ? matchPmi(p.extractedText) : { totalScore: 0, topPairs: [] };
+        const topPair = fragPmi.topPairs[0];
+        return {
+          text: p.extractedText,
+          patternId: p.patternId,
+          location: p.location,
+          pmiScore: fragPmi.totalScore,
+          pmiTopPair: topPair ? `${topPair.wordA}+${topPair.wordB}` : undefined,
+        };
+      });
+      const judgeResult = await judge(extractedTexts, enrichedFragments);
       result.judge = judgeResult;
       if (options?.verbose) {
         console.error(`[scanner] Judge: ${judgeResult.overallVerdict} (confidence: ${judgeResult.highestConfidence})`);

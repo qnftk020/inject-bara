@@ -95,24 +95,31 @@ function loadJudgePrompts(): JudgePrompts | null {
   return null;
 }
 
-function getJudgeSystemPrompt(fragments: string[]): string {
+/** Layer 2+3 연동을 위한 enriched fragment */
+export interface EnrichedFragment {
+  text: string;
+  patternId: string;
+  location: string;
+  contextBefore?: string;
+  contextAfter?: string;
+  pmiScore?: number;
+  pmiTopPair?: string;
+}
+
+function getJudgeSystemPrompt(fragments: EnrichedFragment[]): string {
   const prompts = loadJudgePrompts();
-  // 한국어 텍스트 비율에 따라 프롬프트 선택
-  const koreanRatio = fragments.join(' ').match(/[가-힣]/g)?.length ?? 0;
-  const totalChars = fragments.join(' ').length || 1;
-  const isKorean = koreanRatio / totalChars > 0.3;
+  const allText = fragments.map(f => f.text).join(' ');
+  const koreanRatio = (allText.match(/[가-힣]/g)?.length ?? 0) / (allText.length || 1);
+  const isKorean = koreanRatio > 0.3;
 
   let systemInstruction: string;
   if (prompts) {
     systemInstruction = isKorean ? prompts.korean : prompts.precision;
   } else {
-    // 폴백: 하드코딩 프롬프트
     systemInstruction = 'You are a security analyzer specializing in detecting prompt injection in web content.';
   }
 
   return `${systemInstruction}
-
-Below are text fragments extracted from a web page that triggered static heuristics for hidden content. Decide whether each fragment is a prompt injection attempt — i.e., text designed to manipulate the behavior of an AI agent that reads the page.
 
 Output JSON only, no prose. Use this exact schema:
 {
@@ -134,18 +141,30 @@ Fragments:
 }
 
 /**
- * LLM-as-Judge: 의심 텍스트 조각을 Gemini에 보내 인젝션 여부 판정
+ * LLM-as-Judge: PMI 결과 + context를 포함한 enriched fragments로 판정
  */
-export async function judge(fragments: string[]): Promise<JudgeResult> {
+export async function judge(fragments: string[], enriched?: EnrichedFragment[]): Promise<JudgeResult> {
   if (fragments.length === 0) {
     return { fragments: [], overallVerdict: 'benign', highestConfidence: 0 };
   }
 
-  // 프롬프트 구성 (judge_prompts.json 기반, 한국어 자동 감지)
-  const numberedFrags = fragments
-    .map((f, i) => `[${i + 1}] "${f.slice(0, 500)}"`)
-    .join('\n');
-  const prompt = getJudgeSystemPrompt(fragments) + numberedFrags;
+  const enrichedFrags: EnrichedFragment[] = enriched || fragments.map(f => ({
+    text: f, patternId: 'unknown', location: 'unknown',
+  }));
+
+  // enriched 정보를 포함한 프롬프트 구성
+  const numberedFrags = enrichedFrags
+    .map((f, i) => {
+      let entry = `[${i + 1}] fragment: "${f.text.slice(0, 400)}"`;
+      entry += `\n    detected_pattern: ${f.patternId}`;
+      if (f.contextBefore) entry += `\n    context_before: "${f.contextBefore.slice(0, 100)}"`;
+      if (f.contextAfter) entry += `\n    context_after: "${f.contextAfter.slice(0, 100)}"`;
+      if (f.pmiScore !== undefined) entry += `\n    pmi_score: ${f.pmiScore.toFixed(1)}`;
+      if (f.pmiTopPair) entry += `\n    pmi_top_pair: "${f.pmiTopPair}"`;
+      return entry;
+    })
+    .join('\n\n');
+  const prompt = getJudgeSystemPrompt(enrichedFrags) + numberedFrags;
 
   const rawResponse = await callGemini(prompt);
 
