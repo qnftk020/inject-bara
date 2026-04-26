@@ -47,7 +47,7 @@
       gap: 6px;
     }
     #${WIDGET_ID} .capy {
-      width: 110px;
+      width: 120px;
       height: auto;
       cursor: pointer;
       display: block;
