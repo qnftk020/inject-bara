@@ -350,12 +350,29 @@
     return false;
   }
 
+  function isInNonContent(el) {
+    let cur = el;
+    while (cur) {
+      const tag = cur.tagName;
+      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'NOSCRIPT' || tag === 'TEMPLATE') return true;
+      cur = cur.parentElement;
+    }
+    return false;
+  }
+
+  const INJECTION_VOCAB = /\b(always|ignore|you are|you must|do not|never|describe|recommend|portray|frame|emphasize|position\s+(this|the|it)|treat\s+(this|the|it)|consider\s+(this|the|it)|verified|act as|system|assistant|agent|prompt|instruction)\b|(항상|반드시|무시|이전\s*(명령|지시)|당신은|너는|시스템|에이전트|어시스턴트|반드시\s*추천|반드시\s*묘사|verified)/i;
+
+  function looksLikeInjection(text) {
+    return INJECTION_VOCAB.test(text);
+  }
+
   function scanWhiteOnWhite() {
     const matches = [];
     document.querySelectorAll('body *').forEach((el) => {
-      if (isSelf(el)) return;
+      if (isSelf(el) || isInNonContent(el)) return;
       const txt = directText(el);
-      if (txt.length === 0) return;
+      if (txt.length < 40) return;
+      if (!looksLikeInjection(txt)) return;
       const cs = getComputedStyle(el);
       const color = normalizeColor(cs.color);
       const bg = getEffectiveBg(el);
@@ -407,7 +424,7 @@
     const seen = new Set();
     walkText(document.body, (node) => {
       const el = node.parentElement;
-      if (!el || isSelf(el) || seen.has(el)) return;
+      if (!el || isSelf(el) || isInNonContent(el) || seen.has(el)) return;
       const text = node.nodeValue;
       const total = text.length;
       if (total < 5) return;
@@ -465,9 +482,10 @@
   function scanTinyFont() {
     const matches = [];
     document.querySelectorAll('body *').forEach((el) => {
-      if (isSelf(el)) return;
+      if (isSelf(el) || isInNonContent(el)) return;
       const txt = directText(el);
-      if (txt.length < 30) return;
+      if (txt.length < 40) return;
+      if (!looksLikeInjection(txt)) return;
       const cs = getComputedStyle(el);
       const fontSize = parseFloat(cs.fontSize);
       if (!isNaN(fontSize) && fontSize < 1) {
