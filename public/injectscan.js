@@ -379,7 +379,7 @@
     }
   });
 
-  capyImg.addEventListener('click', function () {
+  capyImg.addEventListener('click', async function () {
     if (currentState === STATE.IDLE) {
       // Wake + scan
       setScanning();
@@ -387,21 +387,33 @@
       hintEl.classList.add('hidden');
       showBadge('스캔 중...', 'scanning');
 
-      setTimeout(function () {
-        const results = scan();
-        lastResults = results;
-        if (results.totalCount > 0) {
-          setWarning();
-          showBadge(`⚠️ ${results.totalCount} found`, 'warn');
-          currentState = STATE.DETECTED;
-          openPanel();
-        } else {
-          setAwake();
-          capyImg.classList.remove('scanning');
-          showBadge('✅ Clean', 'clean');
-          currentState = STATE.CLEAN;
+      // Step 1: 브라우저 측 Layer 1 (즉시)
+      const clientResults = scanClient();
+      lastResults = clientResults;
+
+      // Step 2: 서버 측 Layer 1+2+3 (비동기)
+      try {
+        const serverResults = await scanServer();
+        if (serverResults) {
+          // 서버 결과 병합
+          mergeServerResults(clientResults, serverResults);
         }
-      }, 700);
+      } catch (e) {
+        // 서버 연결 실패 시 클라이언트 결과만 사용
+        console.warn('[InjectScan] Server scan unavailable:', e.message);
+      }
+
+      if (lastResults.totalCount > 0) {
+        setWarning();
+        showBadge(`⚠️ ${lastResults.totalCount} found`, 'warn');
+        currentState = STATE.DETECTED;
+        openPanel();
+      } else {
+        setAwake();
+        capyImg.classList.remove('scanning');
+        showBadge('✅ Clean', 'clean');
+        currentState = STATE.CLEAN;
+      }
     } else {
       // Back to sleep
       removeAllHighlights();
@@ -414,7 +426,9 @@
   });
 
   // ==== Detection ====
-  function scan() {
+
+  // 브라우저 측 스캔 (Layer 1: 4종 패턴)
+  function scanClient() {
     const matches = [];
     matches.push(...scanMeta());
     matches.push(...scanWhiteOnWhite());
@@ -426,7 +440,55 @@
       totalCount: matches.length,
       totalScore,
       level: classify(totalScore),
+      pmi: null,
+      judge: null,
     };
+  }
+
+  // 서버 측 스캔 (Layer 1+2+3 전체)
+  async function scanServer() {
+    const html = document.documentElement.outerHTML;
+    const url = window.location.href;
+    const res = await fetch(SCRIPT_BASE + 'api/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ html, url }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  }
+
+  // 서버 결과를 클라이언트 결과에 병합
+  function mergeServerResults(clientResults, server) {
+    // 서버에서 탐지한 패턴 중 클라이언트에 없는 것 추가
+    if (server.patterns) {
+      const clientIds = new Set(clientResults.matches.map(m => m.extractedText));
+      for (const sp of server.patterns) {
+        if (!clientIds.has(sp.extractedText)) {
+          clientResults.matches.push({
+            patternId: sp.patternId,
+            patternName: sp.patternName + ' (server)',
+            severity: sp.severity,
+            location: sp.location,
+            extractedText: sp.extractedText,
+            element: null,
+          });
+        }
+      }
+    }
+    // PMI 결과 추가
+    if (server.pmi && server.pmi.matchedPairs && server.pmi.matchedPairs.length > 0) {
+      clientResults.pmi = server.pmi;
+    }
+    // LLM-as-Judge 결과 추가
+    if (server.judge) {
+      clientResults.judge = server.judge;
+    }
+    // 점수 재계산
+    clientResults.totalScore = server.riskScore || clientResults.matches.reduce((s, m) => s + m.severity, 0);
+    clientResults.totalCount = clientResults.matches.length;
+    clientResults.level = classify(clientResults.totalScore);
   }
 
   function classify(score) {
@@ -697,6 +759,31 @@
       `
       )
       .join('');
+    // PMI 결과
+    let pmiHtml = '';
+    if (r.pmi && r.pmi.topPairs && r.pmi.topPairs.length > 0) {
+      const pairs = r.pmi.topPairs.map(p =>
+        `<div style="font-size:11px;color:#6b7280;margin:2px 0;">  ("${escapeHtml(p.wordA)}", "${escapeHtml(p.wordB)}") — pmi=${p.score.toFixed(1)}</div>`
+      ).join('');
+      pmiHtml = `<div class="match-card" style="background:#e0f2fe;border-color:#0ea5e9;">
+        <div class="pattern" style="color:#0369a1;">📊 PMI Signatures<span class="severity" style="background:#0ea5e9;">${r.pmi.matchedPairs.length} pairs</span></div>
+        ${pairs}
+      </div>`;
+    }
+
+    // Judge 결과
+    let judgeHtml = '';
+    if (r.judge && r.judge.overallVerdict) {
+      const verdictColor = r.judge.overallVerdict === 'injection' ? '#dc2626' : r.judge.overallVerdict === 'uncertain' ? '#f59e0b' : '#10b981';
+      const fragments = (r.judge.fragments || []).filter(f => f.isInjection).map(f =>
+        `<div style="font-size:11px;color:#6b7280;margin:2px 0;">  ⚡ ${escapeHtml(f.category)} — ${escapeHtml(f.rationale)}</div>`
+      ).join('');
+      judgeHtml = `<div class="match-card" style="background:#fef2f2;border-color:${verdictColor};">
+        <div class="pattern" style="color:${verdictColor};">🤖 LLM Judge: ${r.judge.overallVerdict.toUpperCase()}<span class="severity" style="background:${verdictColor};">${(r.judge.highestConfidence * 100).toFixed(0)}%</span></div>
+        ${fragments}
+      </div>`;
+    }
+
     return `
       <div class="panel-header">
         <div>
@@ -705,7 +792,7 @@
         </div>
         <span class="close">✕</span>
       </div>
-      <div class="panel-body">${matchesHtml}</div>
+      <div class="panel-body">${matchesHtml}${pmiHtml}${judgeHtml}</div>
       <div class="panel-actions">
         <button class="btn-highlight">📍 위치 표시</button>
         <button class="btn-clean primary">🧼 인젝션 숨기기</button>
