@@ -382,11 +382,15 @@
     return await res.json();
   }
 
-  // 서버 결과 (PMI + Judge) 를 클라이언트 결과에 병합
+  // 서버 결과 (PMI + Embedding + Judge) 를 클라이언트 결과에 병합
   function mergeServerResults(clientResults, server) {
     // PMI 결과 추가
     if (server.pmi && server.pmi.matchedPairs && server.pmi.matchedPairs.length > 0) {
       clientResults.pmi = server.pmi;
+    }
+    // Embedding 결과 추가
+    if (server.embedding) {
+      clientResults.embedding = server.embedding;
     }
     // LLM-as-Judge 결과 추가
     if (server.judge) {
@@ -692,6 +696,17 @@
       </div>`;
     }
 
+    // Embedding 유사도 결과
+    let embHtml = '';
+    if (r.embedding && r.embedding.maxSimilarity > 0) {
+      const simPct = (r.embedding.maxSimilarity * 100).toFixed(0);
+      const simColor = r.embedding.isLikelyInjection ? '#dc2626' : '#6b7280';
+      embHtml = `<div class="match-card" style="background:#f5f3ff;border-color:#8b5cf6;">
+        <div class="pattern" style="color:#6d28d9;">🧬 Embedding Similarity<span class="severity" style="background:${simColor};">${simPct}%</span></div>
+        <div style="font-size:11px;color:#6b7280;margin-top:4px;">Best match: "${escapeHtml(r.embedding.bestMatch.slice(0,80))}"</div>
+      </div>`;
+    }
+
     // Judge 결과
     let judgeHtml = '';
     if (r.judge && r.judge.overallVerdict) {
@@ -713,7 +728,7 @@
         </div>
         <span class="close">✕</span>
       </div>
-      <div class="panel-body">${matchesHtml}${pmiHtml}${judgeHtml}</div>
+      <div class="panel-body">${matchesHtml}${pmiHtml}${embHtml}${judgeHtml}</div>
       <div class="panel-actions">
         <button class="btn-highlight">📍 위치 표시</button>
         <button class="btn-clean primary">🧼 인젝션 숨기기</button>
