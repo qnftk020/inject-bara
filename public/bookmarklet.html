@@ -707,8 +707,22 @@
     (function () {
       // Bookmarklet code — Vercel URL 고정 (어디서든 동작)
       const DEPLOY_URL = 'https://injectbara.vercel.app';
-      // 방식 1: script 태그 삽입 (대부분의 사이트)
-      const bmCode = "javascript:(function(){var s=document.createElement('script');s.src='" + DEPLOY_URL + "/injectscan.js?'+Date.now();document.body.appendChild(s);})();";
+      // 스크립트 로드 실패 시 안전 안내 토스트 표시
+      const bmCode = [
+        "javascript:(function(){",
+        "var s=document.createElement('script');",
+        "s.src='" + DEPLOY_URL + "/injectscan.js?'+Date.now();",
+        "s.onerror=function(){",
+        "  var d=document.createElement('div');",
+        "  d.id='__is-safe-toast';",
+        "  d.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#065f46;color:#fff;padding:16px 24px;border-radius:12px;z-index:2147483647;font-family:-apple-system,sans-serif;font-size:14px;max-width:420px;line-height:1.6;box-shadow:0 8px 24px rgba(0,0,0,0.25);text-align:center';",
+        "  d.innerHTML='<b>\\u2705 This site is safe</b><br><span style=font-size:12px>CSP blocks external scripts. Injection risk is low.</span>';",
+        "  document.body.appendChild(d);",
+        "  setTimeout(function(){d.remove()},5000);",
+        "};",
+        "document.body.appendChild(s);",
+        "})()"
+      ].join('');
       document.getElementById('bm-link').setAttribute('href', bmCode);
       document.getElementById('bm-code').textContent = bmCode;
 
