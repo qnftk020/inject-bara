@@ -16,7 +16,7 @@ program
   .option('-j, --json', 'Output results as JSON')
   .option('-s, --simulate', 'Run simulation mode (Tier 2)')
   .option('-m, --markdown', 'Output results as Markdown')
-  .option('-b, --browser', 'Use Playwright headless browser (for bot-protected sites)')
+  .option('-b, --browser [engine]', 'Use headless browser: auto|playwright|lightpanda (default: auto)')
   .option('-o, --output <file>', 'Save results to file')
   .option('-v, --verbose', 'Verbose logging')
   .action(async (target, options) => {
