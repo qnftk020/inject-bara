@@ -296,23 +296,10 @@
       const clientResults = scanClient();
       lastResults = clientResults;
 
-      // Step 2: 서버 측 Layer 2+3 (비동기)
-      try {
-        console.log('[InjectScan] Layer 1 found', clientResults.totalCount, 'patterns. Calling server for Layer 2+3...');
-        const serverResults = await scanServer();
-        if (serverResults) {
-          console.log('[InjectScan] Server responded:', serverResults);
-          mergeServerResults(clientResults, serverResults);
-        } else {
-          console.log('[InjectScan] Server returned null (no patterns to judge or API unavailable)');
-        }
-      } catch (e) {
-        console.warn('[InjectScan] Server scan failed:', e.message);
-      }
-
+      // Layer 1 결과 먼저 표시
       if (lastResults.totalCount > 0) {
         setWarning();
-        showBadge(`⚠️ ${lastResults.totalCount} found`, 'warn');
+        showBadge('L1: ' + lastResults.totalCount + ' found', 'warn');
         currentState = STATE.DETECTED;
         openPanel();
       } else {
@@ -320,6 +307,27 @@
         capyImg.classList.remove('scanning');
         showBadge('✅ Clean', 'clean');
         currentState = STATE.CLEAN;
+      }
+
+      // Step 2: 서버 측 Layer 2+3 (비동기, 결과 오면 패널 업데이트)
+      if (lastResults.totalCount > 0) {
+        showBadge('L2+L3 분석 중...', 'scanning');
+        try {
+          const serverResults = await scanServer();
+          if (serverResults) {
+            mergeServerResults(clientResults, serverResults);
+            // 패널 + 배지 업데이트
+            showBadge('⚠️ ' + lastResults.totalCount + ' found', 'warn');
+            openPanel();
+          }
+        } catch (e) {
+          console.warn('[InjectScan] Server scan failed:', e.message);
+        }
+        // 최종 배지 업데이트
+        if (lastResults.totalCount > 0) {
+          const lvl = lastResults.level;
+          showBadge(lvl.label + ' · ' + lastResults.totalCount + '건', lvl.key === 'clean' ? 'clean' : 'warn');
+        }
       }
     } else {
       // Back to sleep
