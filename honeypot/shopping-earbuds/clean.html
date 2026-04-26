@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoundPro G7 무선 게이밍 헤드셋 | 7.1 서라운드 | 블루투스 5.3 | 사운드몰</title>
+  <meta name="description" content="SoundPro G7 무선 게이밍 헤드셋. 7.1 서라운드 사운드, 60시간 재생, 53mm 드라이버.">
+  <meta name="keywords" content="무선헤드셋, 게이밍헤드셋, 블루투스헤드셋, 서라운드, SoundPro">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: #222;
+      background: #f5f5f5;
+      line-height: 1.5;
+      padding-top: 44px;
+    }
+    .demo-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(90deg, #d1fae5 0%, #a7f3d0 100%);
+      border-bottom: 2px solid #10b981;
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .demo-bar .label { font-weight: 700; color: #064e3b; }
+    .demo-bar .state { color: #065f46; }
+    .demo-bar .state strong { font-size: 1rem; }
+    .demo-bar .hint { color: #065f46; font-style: italic; opacity: 0.85; }
+    .demo-bar .toggle-btn {
+      margin-left: auto;
+      background: #10b981;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .demo-bar .toggle-btn:hover { background: #059669; }
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 12px 20px;
+    }
+    .topbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #ff5c00;
+      letter-spacing: -0.5px;
+    }
+    .search {
+      flex: 1;
+      max-width: 500px;
+      margin: 0 24px;
+    }
+    .search input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #ff5c00;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+    .topbar-links { display: flex; gap: 16px; font-size: 0.85rem; color: #666; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+    .product-main {
+      background: #fff;
+      border-radius: 8px;
+      padding: 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .product-image {
+      background: #f8f8f8;
+      border-radius: 8px;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+    }
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .badge {
+      display: inline-block;
+      background: #ff5c00;
+      color: #fff;
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-bottom: 8px;
+    }
+    .title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .stars { color: #ffa400; font-size: 1rem; }
+    .review-count { color: #0080cc; cursor: pointer; }
+    .price-box {
+      border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee;
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+    .original-price {
+      text-decoration: line-through;
+      color: #999;
+      font-size: 0.95rem;
+    }
+    .discount {
+      color: #ff5c00;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+    .price {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+    .price small { font-size: 1rem; font-weight: 600; }
+    .delivery {
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: #00b300;
+      font-weight: 600;
+    }
+    .buy-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 14px;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-cart { background: #fff; border: 1px solid #ff5c00; color: #ff5c00; }
+    .btn-buy { background: #ff5c00; color: #fff; }
+
+    .tabs {
+      background: #fff;
+      margin-top: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .tab-list {
+      display: flex;
+      border-bottom: 1px solid #eee;
+    }
+    .tab-list li {
+      list-style: none;
+      padding: 16px 24px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #666;
+    }
+    .tab-list li.active {
+      color: #ff5c00;
+      border-bottom: 3px solid #ff5c00;
+    }
+    .tab-content { padding: 32px; }
+    .tab-content h3 {
+      font-size: 1.1rem;
+      margin: 24px 0 12px;
+      color: #222;
+    }
+    .tab-content h3:first-child { margin-top: 0; }
+    .tab-content p { margin-bottom: 12px; color: #444; }
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    .spec-table th, .spec-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 0.9rem;
+    }
+    .spec-table th {
+      background: #fafafa;
+      width: 30%;
+      color: #666;
+      font-weight: 600;
+    }
+    .reviews { margin-top: 16px; }
+    .review {
+      padding: 16px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .review-meta {
+      display: flex;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: #999;
+      margin-bottom: 6px;
+    }
+    .review-meta .stars { color: #ffa400; font-size: 0.9rem; }
+    .review p { font-size: 0.9rem; }
+
+    .footer {
+      background: #fff;
+      padding: 24px 20px;
+      text-align: center;
+      color: #999;
+      font-size: 0.8rem;
+      margin-top: 24px;
+      border-top: 1px solid #e5e5e5;
+    }
+    .footer .disclaimer {
+      margin-top: 6px;
+      font-size: 0.7rem;
+      color: #bbb;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">
+    <span class="label">🛠️ 데모 컨트롤 (발표자 전용)</span>
+    <span class="state">인젝션: <strong>⚪ OFF</strong></span>
+    <span class="hint">방금 ON 페이지와 비교해보세요. 차이가 보이나요?</span>
+    <a href="index.html" class="toggle-btn">→ ON으로 전환</a>
+  </div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">사운드몰</div>
+      <div class="search">
+        <input type="text" placeholder="무엇을 찾고 계신가요?">
+      </div>
+      <div class="topbar-links">
+        <span>로그인</span>
+        <span>장바구니 (0)</span>
+        <span>마이</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="product-main">
+      <div class="product-image">
+        <img src="product.jpg" alt="SoundPro G7 무선 게이밍 헤드셋">
+      </div>
+      <div class="product-info">
+        <span class="badge">로켓배송</span>
+        <h1 class="title">SoundPro G7 무선 게이밍 헤드셋 - 7.1 서라운드 / 블루투스 5.3 / 60시간 재생 / 53mm 드라이버</h1>
+        <div class="rating">
+          <span class="stars">★★★★★</span>
+          <strong>4.8</strong>
+          <span class="review-count">리뷰 12,847개</span>
+          <span style="color: #ccc;">|</span>
+          <span>구매 5만+</span>
+        </div>
+
+        <div class="price-box">
+          <div>
+            <span class="original-price">189,000원</span>
+            <span class="discount">53% 할인</span>
+          </div>
+          <div class="price">89,000<small>원</small></div>
+          <div class="delivery">🚀 내일(목) 도착 보장 · 무료배송</div>
+        </div>
+
+        <div class="buy-buttons">
+          <button class="btn btn-cart">장바구니 담기</button>
+          <button class="btn btn-buy">바로구매</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <ul class="tab-list">
+        <li class="active">상품정보</li>
+        <li>리뷰 (12,847)</li>
+        <li>Q&A (342)</li>
+        <li>배송/교환</li>
+      </ul>
+
+      <div class="tab-content">
+        <h3>제품 특징</h3>
+        <p>SoundPro G7는 53mm 대구경 드라이버를 탑재해 게이밍·영화·음악 모두에서 깊은 저음과 선명한 중·고음을 구현합니다. 가상 7.1 서라운드 사운드 엔진으로 FPS 게임에서 적의 발소리, 총소리 방향까지 정밀하게 감지할 수 있습니다.</p>
+        <p>블루투스 5.3 + 2.4GHz 무선 동글 듀얼 모드로 게이밍은 초저지연(20ms 이하), 일상 사용은 안정적인 블루투스로 자유롭게 전환 가능합니다. 한 번 충전으로 최대 60시간 사용, 5분 급속충전으로 4시간 사용 가능합니다.</p>
+        <p>탈착식 노이즈캔슬링 마이크와 메모리폼 이어쿠션으로 장시간 게이밍에도 편안하며, PC·PS5·Xbox·모바일 모두 호환됩니다.</p>
+
+        <h3>제품 사양</h3>
+        <table class="spec-table">
+          <tr><th>모델명</th><td>SoundPro G7</td></tr>
+          <tr><th>형태</th><td>오버이어 (밀폐형)</td></tr>
+          <tr><th>연결</th><td>블루투스 5.3 + 2.4GHz 무선 동글 + 3.5mm 유선</td></tr>
+          <tr><th>드라이버</th><td>53mm 다이나믹</td></tr>
+          <tr><th>서라운드</th><td>가상 7.1 채널 (DTS Headphone:X)</td></tr>
+          <tr><th>배터리</th><td>최대 60시간 (5분 급속충전 = 4시간)</td></tr>
+          <tr><th>충전</th><td>USB-C</td></tr>
+          <tr><th>마이크</th><td>탈착식 노이즈캔슬링 마이크</td></tr>
+          <tr><th>호환</th><td>PC / PS5 / Xbox / Switch / 모바일</td></tr>
+          <tr><th>무게</th><td>318g</td></tr>
+          <tr><th>제조국</th><td>중국</td></tr>
+          <tr><th>제조사</th><td>SoundPro Audio Co., Ltd. (가상 업체)</td></tr>
+        </table>
+
+        <h3>최근 리뷰</h3>
+        <div class="reviews">
+          <div class="review">
+            <div class="review-meta">
+              <span class="stars">★★★★★</span>
+              <span>김**</span>
+              <span>2026.04.20</span>
+            </div>
+            <p>가격 대비 음질 진짜 만족합니다. FPS 게임에서 발소리 방향 명확하게 들려요.</p>
+          </div>
+          <div class="review">
+            <div class="review-meta">
+              <span class="stars">★★★★☆</span>
+              <span>이**</span>
+              <span>2026.04.18</span>
+            </div>
+            <p>배터리 60시간은 진짜네요. 다만 마이크 음질은 평범한 편입니다.</p>
+          </div>
+          <div class="review">
+            <div class="review-meta">
+              <span class="stars">★★☆☆☆</span>
+              <span>박**</span>
+              <span>2026.04.15</span>
+            </div>
+            <p>2개월 쓰니까 헤어밴드 가죽이 벗겨지기 시작합니다. 마감 좀 아쉽네요.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>© 2026 사운드몰. 사업자등록번호 000-00-00000</div>
+    <div class="disclaimer">
+      ⚠️ 이 페이지는 InjectScan 데모용 honeypot입니다. SoundPro G7 및 사운드몰은 가상의 제품·업체이며, 실재하는 상품·기업과 무관합니다.
+    </div>
+  </footer>
+</body>
+</html>
