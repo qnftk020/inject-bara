@@ -11,8 +11,9 @@ const INSTRUCTION_PATTERNS: RegExp[] = [
   /\bdescribe\b/i, /\brespond\b/i, /\bact as\b/i, /\bforget\b/i,
   /\bsystem\s*prompt/i, /\bprevious\s*instructions/i,
   // Korean
-  /\b무시\b/, /\b항상\b/, /\b지시\b/, /\b역할\b/, /\b이전\b/,
-  /\b절대\b/, /\b반드시\b/, /\b설명\b.*\b하[세셔]요/,
+  // Korean (NO \b — JS word boundary doesn't work with Korean)
+  /무시/, /항상/, /지시/, /역할/, /이전/,
+  /절대/, /반드시/, /설명.*하[세셔]요/, /강조/, /요약/,
   // External pattern files
   ...loadPatternsFromFile('korean_patterns.json'),
   ...loadPatternsFromFile('english_patterns.json'),

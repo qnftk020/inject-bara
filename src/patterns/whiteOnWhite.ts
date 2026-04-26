@@ -81,14 +81,16 @@ export function scanWhiteOnWhite(html: string): PatternMatch[] {
     });
   });
 
-  // 3) <style> 블록 CSS 클래스: color + background 같은 클래스
+  // 3) <style> 블록 CSS 클래스
   const classStyles = extractClassStyles(html);
+  const DEFAULT_BG = '255,255,255'; // 배경 미지정 시 기본 흰색 가정
   for (const [className, props] of classStyles) {
     const fg = normalizeColor(props['color'] || '');
-    const bg = normalizeColor(props['background-color'] || props['background'] || '');
-    if (fg && bg && colorsSimilar(fg, bg)) {
+    const bg = normalizeColor(props['background-color'] || props['background'] || '') || DEFAULT_BG;
+    // color + background 같은 클래스, 또는 배경 미지정 + 흰색 글씨
+    if (fg && colorsSimilar(fg, bg)) {
       $(`.${className}`).each((_, el) => {
-        addMatch(el, props['color'], props['background-color'] || props['background'], `CSS class .${className}`);
+        addMatch(el, props['color'], props['background-color'] || props['background'] || 'default(#fff)', `CSS class .${className}`);
       });
     }
   }

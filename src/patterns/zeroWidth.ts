@@ -2,31 +2,30 @@ import { load } from 'cheerio';
 import type { PatternMatch } from './types.js';
 import { getSelector } from './utils.js';
 
-// Zero-width 문자 코드포인트
-const ZW_CHARS = new Set([
-  0x200B, // Zero Width Space
-  0x200C, // Zero Width Non-Joiner
-  0x200D, // Zero Width Joiner
-  0xFEFF, // Byte Order Mark
-  0x2060, // Word Joiner
-]);
-
 const ZW_REGEX = /[\u200B\u200C\u200D\uFEFF\u2060]/g;
 const THRESHOLD = 0.05; // 5%
 
+// 렌더링되지 않는 태그 (AI가 읽지 않는 영역)
+const SKIP_TAGS = new Set(['script', 'style', 'noscript', 'template']);
+
 /**
  * Pattern 2: Zero-Width Characters
- * 텍스트 내 zero-width 문자 비율이 5% 초과 시 탐지
+ * 텍스트 내 zero-width 문자 비율 >5% 또는 절대 개수 >=3
+ * <script>, <style> 등 비렌더링 태그 제외
  * severity: 30
  */
 export function scanZeroWidth(html: string): PatternMatch[] {
   const $ = load(html);
   const matches: PatternMatch[] = [];
 
-  // 모든 텍스트 노드를 포함하는 요소 순회
   $('body *').each((_, el) => {
+    // 비렌더링 태그 제외
+    const tagName = ((el as any).tagName || (el as any).name || '').toLowerCase();
+    if (SKIP_TAGS.has(tagName)) return;
+    // 부모가 비렌더링 태그인 경우도 제외
     const $el = $(el);
-    // 직접 텍스트만 (자식 요소 제외)
+    if ($el.closest('script, style, noscript, template').length > 0) return;
+
     const directText = $el.contents()
       .filter((_, node) => node.type === 'text')
       .text();
@@ -37,8 +36,8 @@ export function scanZeroWidth(html: string): PatternMatch[] {
     if (!zwMatches) return;
 
     const ratio = zwMatches.length / directText.length;
-    if (ratio > THRESHOLD) {
-      // zero-width 제거 후 숨겨진 텍스트 복원 시도
+    // 비율 5% 초과 OR 절대 개수 3개 이상
+    if (ratio > THRESHOLD || zwMatches.length >= 3) {
       const cleaned = directText.replace(ZW_REGEX, '').trim();
       matches.push({
         patternId: 'zero-width',

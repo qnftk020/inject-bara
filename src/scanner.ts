@@ -1,7 +1,7 @@
 import type { PatternMatch } from './patterns/types.js';
 import { ALL_SCANNERS } from './patterns/index.js';
 import { matchPmi, type PmiResult } from './pmi/match.js';
-import { judge, simulate, hasApiKey, type JudgeResult, type SimResult } from './judge.js';
+import { judge, simulate, simulateCanary, hasApiKey, type JudgeResult, type SimResult, type CanaryResult } from './judge.js';
 
 export interface ScanOptions {
   json?: boolean;
@@ -18,9 +18,12 @@ export interface ScanResult {
   pmi?: PmiResult;
   judge?: JudgeResult;
   simulation?: SimResult;
+  canary?: CanaryResult;
 }
 
-function calcRiskLevel(score: number): ScanResult['riskLevel'] {
+function calcRiskLevel(score: number, patternCount: number): ScanResult['riskLevel'] {
+  // 패턴이 탐지되면 최소 suspicious (데모에서 "CLEAN" 혼동 방지)
+  if (patternCount > 0 && score <= 30) return 'suspicious';
   if (score <= 30) return 'clean';
   if (score <= 60) return 'suspicious';
   if (score <= 100) return 'high';
@@ -51,7 +54,7 @@ export async function scan(
     url,
     timestamp: new Date().toISOString(),
     riskScore,
-    riskLevel: calcRiskLevel(riskScore),
+    riskLevel: calcRiskLevel(riskScore, patterns.length),
     patterns,
   };
 
@@ -100,6 +103,7 @@ export async function scan(
       console.error(`[scanner] GEMINI_API_KEY not set — simulation skipped`);
     }
   } else if (options?.simulate) {
+    // 1) 원본 vs 클린 요약 비교
     try {
       const simResult = await simulate(url, html, extractedTexts);
       result.simulation = simResult;
@@ -109,6 +113,19 @@ export async function scan(
     } catch (err) {
       if (options?.verbose) {
         console.error(`[scanner] Simulation error:`, err);
+      }
+    }
+
+    // 2) Canary Token 테스트
+    try {
+      const canaryResult = await simulateCanary(html);
+      result.canary = canaryResult;
+      if (options?.verbose) {
+        console.error(`[scanner] Canary: ${canaryResult.verdict} (token: ${canaryResult.token})`);
+      }
+    } catch (err) {
+      if (options?.verbose) {
+        console.error(`[scanner] Canary error:`, err);
       }
     }
   }
@@ -122,7 +139,7 @@ export async function scan(
     riskScore += Math.round(result.judge.highestConfidence * 30); // Judge 최대 +30
   }
   result.riskScore = riskScore;
-  result.riskLevel = calcRiskLevel(riskScore);
+  result.riskLevel = calcRiskLevel(riskScore, result.patterns.length);
 
   return result;
 }

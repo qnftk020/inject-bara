@@ -16,14 +16,17 @@ program
   .option('-j, --json', 'Output results as JSON')
   .option('-s, --simulate', 'Run simulation mode (Tier 2)')
   .option('-m, --markdown', 'Output results as Markdown')
+  .option('-b, --browser [engine]', 'Use headless browser: auto|playwright|lightpanda (default: auto)')
   .option('-o, --output <file>', 'Save results to file')
-  .option('-b, --browser', 'Use headless browser (bypasses bot protection)')
   .option('-v, --verbose', 'Verbose logging')
   .action(async (target, options) => {
     try {
       // 1. Fetch HTML
       if (options.verbose) console.error(`[InjectScan] Fetching: ${target}`);
-      const { url, html } = await fetchPage(target, options.browser);
+      const { url, html } = await fetchPage(target, {
+        browser: options.browser,
+        verbose: options.verbose,
+      });
 
       // 2. Scan
       if (options.verbose) console.error(`[InjectScan] Scanning...`);

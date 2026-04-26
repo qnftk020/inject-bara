@@ -70,6 +70,15 @@ export function printConsole(result: ScanResult): void {
     console.log(`    Bias Delta: ${chalk.bold(String(result.simulation.biasDelta))} — ${result.simulation.biasDescription}`);
     console.log('');
   }
+
+  // Canary Token 결과
+  if (result.canary) {
+    console.log(chalk.cyan('  Canary Token Test:'));
+    console.log(`    Token: ${result.canary.token}`);
+    const icon = result.canary.kept ? chalk.green('✅ KEPT') : chalk.red('⚠️  LOST');
+    console.log(`    Result: ${icon} — ${result.canary.description}`);
+    console.log('');
+  }
 }
 
 /** JSON 출력 (--json) */
