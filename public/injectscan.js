@@ -41,9 +41,13 @@
       z-index: 2147483647;
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
     }
     #${WIDGET_ID} .capy {
-      width: 140px;
+      width: 110px;
       height: auto;
       cursor: pointer;
       display: block;
@@ -53,33 +57,25 @@
     }
     #${WIDGET_ID} .capy:hover { transform: translateY(-4px) scale(1.03); }
     #${WIDGET_ID} .badge {
-      position: absolute;
-      top: -8px;
-      left: -16px;
       background: #fff;
       border: 2px solid;
-      border-radius: 18px;
-      padding: 6px 12px;
-      font-size: 0.9rem;
+      border-radius: 14px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
       font-weight: 700;
       white-space: nowrap;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
       animation: __is-pop 0.3s ease-out;
+      transform-origin: center top;
     }
     #${WIDGET_ID} .badge.warn { border-color: #f59e0b; color: #92400e; }
     #${WIDGET_ID} .badge.clean { border-color: #10b981; color: #065f46; }
     #${WIDGET_ID} .badge.scanning { border-color: #6b7280; color: #374151; }
     #${WIDGET_ID} .hint {
-      position: absolute;
-      top: 50%;
-      right: 100%;
-      transform: translateY(-50%);
-      margin-right: 12px;
       background: rgba(0,0,0,0.85);
       color: #fff;
-      font-size: 0.8rem;
-      padding: 6px 10px;
+      font-size: 0.72rem;
+      padding: 4px 10px;
       border-radius: 6px;
       white-space: nowrap;
       pointer-events: none;
@@ -87,6 +83,7 @@
       transition: opacity 0.2s;
     }
     #${WIDGET_ID}:hover .hint.show-on-hover { opacity: 1; }
+    #${WIDGET_ID} .hint.hidden { display: none; }
     @keyframes __is-pop {
       0% { transform: scale(0); }
       70% { transform: scale(1.15); }
@@ -189,9 +186,68 @@
     #${PANEL_ID} .panel-actions button.primary:hover { background: #d97706; }
 
     .__is-highlight {
-      outline: 3px dashed #f59e0b !important;
-      outline-offset: 2px !important;
-      background: rgba(245,158,11,0.15) !important;
+      outline: 3px solid #f59e0b !important;
+      outline-offset: 4px !important;
+      background: #fef3c7 !important;
+      color: #1a1a1a !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      font-size: 14px !important;
+      line-height: 1.5 !important;
+      text-indent: 0 !important;
+      position: static !important;
+      left: auto !important;
+      top: auto !important;
+      right: auto !important;
+      transform: none !important;
+      clip: auto !important;
+      clip-path: none !important;
+      width: auto !important;
+      max-width: none !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+      margin: 6px 0 !important;
+      padding: 6px 10px !important;
+      border-radius: 4px !important;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      z-index: 100 !important;
+    }
+    .__is-highlight::before {
+      content: "🔍 인젝션 ";
+      color: #92400e;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+    #__injectscan-toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      font-family: -apple-system, sans-serif;
+      font-size: 0.9rem;
+      z-index: 2147483645;
+      max-width: 480px;
+      line-height: 1.5;
+    }
+    #__injectscan-toast .toast-title {
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 4px;
+    }
+    #__injectscan-toast .toast-item {
+      font-size: 0.82rem;
+      color: #d1d5db;
+      margin-top: 2px;
+      font-family: ui-monospace, monospace;
+      word-break: break-all;
     }
   `;
   document.head.appendChild(style);
@@ -200,8 +256,8 @@
   const widget = document.createElement('div');
   widget.id = WIDGET_ID;
   widget.innerHTML = `
-    <span class="hint show-on-hover">클릭해서 스캔 시작</span>
     <img class="capy" src="${SCRIPT_BASE}capybara-sleep.png" alt="InjectScan">
+    <span class="hint show-on-hover">클릭해서 스캔 시작</span>
   `;
   document.body.appendChild(widget);
 
@@ -213,6 +269,7 @@
     capyImg.classList.remove('scanning');
     hintEl.textContent = '클릭해서 스캔 시작';
     hintEl.classList.add('show-on-hover');
+    hintEl.classList.remove('hidden');
   }
   function setAwake() {
     capyImg.src = SCRIPT_BASE + 'capybara-awake.png';
@@ -231,8 +288,8 @@
       // Wake + scan
       setScanning();
       currentState = STATE.SCANNING;
+      hintEl.classList.add('hidden');
       showBadge('스캔 중...', 'scanning');
-      hintEl.classList.remove('show-on-hover');
 
       setTimeout(function () {
         const results = scan();
@@ -505,7 +562,7 @@
     return `
       <div class="panel-header">
         <div>
-          <strong>InjectScan</strong>
+          <strong>인젝바라</strong>
           <span class="meta">${lvl.label} · ${r.totalCount}건 · ${r.totalScore}점</span>
         </div>
         <span class="close">✕</span>
@@ -523,20 +580,55 @@
   }
 
   let highlighted = false;
+  let toastEl = null;
   function toggleHighlights() {
     if (!lastResults) return;
     if (highlighted) {
       removeAllHighlights();
     } else {
+      let firstVisible = null;
+      const metaMatches = [];
       lastResults.matches.forEach((m) => {
-        if (m.element && m.element.classList) m.element.classList.add('__is-highlight');
+        if (!m.element) return;
+        if (m.patternId === 'suspicious-meta') {
+          metaMatches.push(m);
+          return;
+        }
+        if (m.element.classList) {
+          m.element.classList.add('__is-highlight');
+          if (!firstVisible) firstVisible = m.element;
+        }
       });
+      if (firstVisible) {
+        firstVisible.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      if (metaMatches.length > 0) {
+        showMetaToast(metaMatches);
+      }
       highlighted = true;
     }
   }
   function removeAllHighlights() {
     document.querySelectorAll('.__is-highlight').forEach((el) => el.classList.remove('__is-highlight'));
+    if (toastEl) {
+      toastEl.remove();
+      toastEl = null;
+    }
     highlighted = false;
+  }
+  function showMetaToast(metas) {
+    if (toastEl) toastEl.remove();
+    toastEl = document.createElement('div');
+    toastEl.id = '__injectscan-toast';
+    const items = metas
+      .map((m) => `<div class="toast-item">${escapeHtml(m.location)} → "${escapeHtml(m.extractedText.slice(0, 80))}..."</div>`)
+      .join('');
+    toastEl.innerHTML = `
+      <div class="toast-title">⚠️ &lt;head&gt; 안 인젝션 (${metas.length}건)</div>
+      <div>화면엔 안 보이지만 AI가 읽는 메타태그:</div>
+      ${items}
+    `;
+    document.body.appendChild(toastEl);
   }
 
   let cleanedElements = [];
