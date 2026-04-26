@@ -84,12 +84,34 @@ InjectScan은 웹 페이지에 은닉된 프롬프트 인젝션을 탐지하기 
 
 ---
 
-## 7. References (참고 문헌)
+## 8. English PMI Validation (Task 2)
+
+상위 50개 단어쌍에 대한 감사 결과:
+- **Injection-Signal (80%)**: `instructions + previous`, `detailed + instructions`, `detection + evade`, `automate + script`, `all + filters`, `bypass + list` 등 명령어 패턴이 주를 이룸.
+- **Topic-Noise (20%)**: `harm + self`, `caught + getting`, `fake + news` 등 유해 콘텐츠 일반 단어 포함.
+
+**분석 결과**: 
+- 주제어 노이즈 비율이 20%로 낮으며, 대부분의 상위 시그니처가 프롬프트 인젝션의 핵심 명령어 구조를 잘 반영하고 있음.
+- `TOPIC_STOPWORDS` 및 `COMMAND_KEYWORDS` 가중치 적용이 효과적이었음을 확인.
+
+**향후 개선안**:
+- 'harm', 'self', 'news' 등 일반 유해 단어를 `TOPIC_STOPWORDS`에 추가하여 명령어 패턴의 정밀도를 더욱 높일 예정.
+
+## 9. References (참고 문헌)
 
 - **Greshake et al. (2023).** *"Not What You've Signed Up For: Indirect Prompt Injection."* (간접 인젝션 이론적 토대)
 - **Zou et al. (2023).** *"Universal Adversarial Attacks on LLMs."* (AdvBench 데이터셋 기반)
 - **Church & Hanks (1990).** *"Word association norms, mutual information."* (PMI 알고리즘 근거)
 - **OWASP (2025).** *"Top 10 for LLM Applications."* (산업 보안 표준)
+
+## 10. External Datasets & Benchmarks
+
+리서치 및 검증에 활용되거나 참고된 주요 데이터셋:
+- **K-Jailbreak (HF)**: 한국어 특화 탈옥 프롬프트 데이터셋.
+- **Deepset Prompt Injection Dataset**: 수백 개의 일반/조작된 프롬프트 컬렉션.
+- **LLMail-Inject**: 이메일을 통한 간접 인젝션(Indirect Injection) 특화 데이터.
+- **Korean Guardrail Dataset (GitHub)**: `prompt-injections-benchmark-kr` 등 한국어 가드레일 평가 데이터.
+- **WildJailbreak-KO (HF)**: 실제 환경에서 발견된 한국어 탈옥 시나리오.
 
 ---
 **InjectScan Research Team**  

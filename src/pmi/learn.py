@@ -12,7 +12,8 @@ TOPIC_STOPWORDS = {
     'bank', 'money', 'credit', 'card', 'identity', 'personal', 'stolen',
     'scam', 'phishing', 'virus', 'malware', 'hack', 'vulnerability', 'exploit',
     'app', 'mobile', 'household', 'items', 'blog', 'post', 'video', 'music',
-    'medical', 'records', 'patients', 'tax', 'welfare', 'insurance', 'government'
+    'medical', 'records', 'patients', 'tax', 'welfare', 'insurance', 'government',
+    'harm', 'self', 'news', 'getting', 'caught'
 }
 
 COMMAND_KEYWORDS = {
