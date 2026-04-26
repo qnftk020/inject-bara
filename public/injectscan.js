@@ -296,16 +296,18 @@
       const clientResults = scanClient();
       lastResults = clientResults;
 
-      // Step 2: 서버 측 Layer 1+2+3 (비동기)
+      // Step 2: 서버 측 Layer 2+3 (비동기)
       try {
+        console.log('[InjectScan] Layer 1 found', clientResults.totalCount, 'patterns. Calling server for Layer 2+3...');
         const serverResults = await scanServer();
         if (serverResults) {
-          // 서버 결과 병합
+          console.log('[InjectScan] Server responded:', serverResults);
           mergeServerResults(clientResults, serverResults);
+        } else {
+          console.log('[InjectScan] Server returned null (no patterns to judge or API unavailable)');
         }
       } catch (e) {
-        // 서버 연결 실패 시 클라이언트 결과만 사용
-        console.warn('[InjectScan] Server scan unavailable:', e.message);
+        console.warn('[InjectScan] Server scan failed:', e.message);
       }
 
       if (lastResults.totalCount > 0) {
@@ -352,13 +354,16 @@
 
   // 서버 측 Layer 2+3 (클라이언트가 찾은 의심 텍스트만 전송)
   async function scanServer() {
-    if (!lastResults || lastResults.totalCount === 0) return null;
-    // 의심 텍스트만 추출 (전체 HTML 대신 — 대형 사이트 타임아웃 방지)
+    if (!lastResults || lastResults.totalCount === 0) {
+      console.log('[InjectScan] No patterns found — skipping server scan');
+      return null;
+    }
     const fragments = lastResults.matches.map(m => ({
       text: m.extractedText,
       patternId: m.patternId,
       location: m.location,
     }));
+    console.log('[InjectScan] Sending', fragments.length, 'fragments to', SCRIPT_BASE + 'api/judge');
     const res = await fetch(SCRIPT_BASE + 'api/judge', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
