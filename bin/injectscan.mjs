@@ -17,12 +17,13 @@ program
   .option('-s, --simulate', 'Run simulation mode (Tier 2)')
   .option('-m, --markdown', 'Output results as Markdown')
   .option('-o, --output <file>', 'Save results to file')
+  .option('-b, --browser', 'Use headless browser (bypasses bot protection)')
   .option('-v, --verbose', 'Verbose logging')
   .action(async (target, options) => {
     try {
       // 1. Fetch HTML
       if (options.verbose) console.error(`[InjectScan] Fetching: ${target}`);
-      const { url, html } = await fetchPage(target);
+      const { url, html } = await fetchPage(target, options.browser);
 
       // 2. Scan
       if (options.verbose) console.error(`[InjectScan] Scanning...`);
