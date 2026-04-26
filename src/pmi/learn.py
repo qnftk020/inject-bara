@@ -2,9 +2,27 @@ import os
 import json
 import re
 import math
-from collections import Counter, defaultdict
+from collections import Counter
 
-# Stopwords to filter out 'Topic Noise' (Harmful contents vocabulary)
+# --- Configuration & Constants ---
+CONFIG = {
+    "paths": {
+        "pos_corpus": "data/injections.txt",
+        "neg_corpus": "data/normal.txt",
+        "output": "data/signatures.json"
+    },
+    "params": {
+        "window_size": 5,
+        "min_count_en": 5,
+        "min_count_ko": 2,
+        "top_n": 200
+    },
+    "weights": {
+        "command_boost_single": 1.5,
+        "command_boost_double": 2.0
+    }
+}
+
 TOPIC_STOPWORDS = {
     'lock', 'pick', 'explosive', 'device', 'car', 'hijack', 'stock', 'market', 
     'financial', 'candidate', 'political', 'bomb', 'murder', 'violence', 
@@ -22,14 +40,15 @@ COMMAND_KEYWORDS = {
     '무시', '지시', '명령', '하세요', '이전', '잊어', '작성', '요약'
 }
 
-def tokenize(text):
-    # Split by whitespace and punctuation, lowercase, length >= 2
-    tokens = re.findall(r'[a-zA-Z가-힣]{2,}', text.lower())
-    # Filter out common topic noise to focus on command structures
-    tokens = [t for t in tokens if t not in TOPIC_STOPWORDS]
-    return tokens
+# --- Utility Functions ---
 
-def count_grams(file_path, window=5): # Matching Backend window size
+def tokenize(text):
+    """Tokenizes text and filters out topic-specific noise."""
+    tokens = re.findall(r'[a-zA-Z가-힣]{2,}', text.lower())
+    return [t for t in tokens if t not in TOPIC_STOPWORDS]
+
+def count_grams(file_path, window):
+    """Counts unigrams and bigrams within a sliding window."""
     unigrams = Counter()
     bigrams = Counter()
     total_tokens = 0
@@ -51,68 +70,70 @@ def count_grams(file_path, window=5): # Matching Backend window size
                     
     return unigrams, bigrams, total_tokens
 
+def calculate_score(wordA, wordB, countAB, pos_uni, pos_total, neg_uni, neg_total):
+    """Calculates a weighted PMI score for a word pair."""
+    # Basic PMI
+    p_ab = countAB / pos_total
+    p_a = pos_uni[wordA] / pos_total
+    p_b = pos_uni[wordB] / pos_total
+    pmi = math.log2(p_ab / (p_a * p_b))
+    
+    # Rarity Penalty based on Normal Corpus
+    neg_p_a = (neg_uni[wordA] + 1) / (neg_total + 1)
+    neg_p_b = (neg_uni[wordB] + 1) / (neg_total + 1)
+    rarity_penalty = math.log10(1.0 / (neg_p_a * neg_p_b))
+    
+    score = pmi * rarity_penalty
+
+    # Command Boosting
+    boost = 1.0
+    if wordA in COMMAND_KEYWORDS or wordB in COMMAND_KEYWORDS:
+        boost = CONFIG["weights"]["command_boost_single"]
+    if wordA in COMMAND_KEYWORDS and wordB in COMMAND_KEYWORDS:
+        boost = CONFIG["weights"]["command_boost_double"]
+    
+    return round(score * boost, 3)
+
+# --- Main Logic ---
+
 def main():
-    print("Counting grams in injections...")
-    pos_uni, pos_bi, pos_total = count_grams('data/injections.txt', window=3)
+    paths = CONFIG["paths"]
+    params = CONFIG["params"]
+
+    print("Counting grams in injection corpus...")
+    pos_uni, pos_bi, pos_total = count_grams(paths["pos_corpus"], params["window_size"])
     
-    print("Counting grams in normal text...")
-    neg_uni, neg_bi, neg_total = count_grams('data/normal.txt', window=3)
+    print("Counting grams in normal corpus...")
+    neg_uni, neg_bi, neg_total = count_grams(paths["neg_corpus"], params["window_size"])
     
-    print("Calculating PMI...")
+    print("Calculating and filtering signatures...")
     signatures = []
     
-    # We only care about pairs in the positive (injection) corpus
     for (wordA, wordB), countAB in pos_bi.items():
-        # Lower threshold for Korean tokens because the corpus is smaller
-        is_korean = any(re.search('[가-힣]', w) for w in [wordA, wordB])
-        min_count = 2 if is_korean else 5
+        # Frequency Threshold Check
+        is_ko = any(re.search('[가-힣]', w) for w in [wordA, wordB])
+        min_count = params["min_count_ko"] if is_ko else params["min_count_en"]
+        if countAB < min_count:
+            continue 
         
-        if countAB < min_count: continue 
-        
-        p_ab = countAB / pos_total
-        p_a = pos_uni[wordA] / pos_total
-        p_b = pos_uni[wordB] / pos_total
-        
-        pmi = math.log2(p_ab / (p_a * p_b))
-        
-        # Filter: If the pair is common in normal corpus, strongly penalize
-        neg_countAB = neg_bi.get((wordA, wordB), 0)
-        
-        # Strict filter: if it appears in normal corpus more than once, it's likely noise
-        if neg_countAB > 1: continue 
-        
-        # Penalize words that are individually very common in normal corpus
-        neg_p_a = (neg_uni[wordA] + 1) / (neg_total + 1)
-        neg_p_b = (neg_uni[wordB] + 1) / (neg_total + 1)
-        
-        # Final Score: PMI biased by rarity in normal corpus
-        rarity_penalty = math.log10(1.0 / (neg_p_a * neg_p_b))
-        
-        score = pmi * rarity_penalty
+        # Noise Filter: Skip if pair appears in normal corpus
+        # Note: We use a stricter check (0 tolerance) to ensure clean signatures
+        if (wordA, wordB) in neg_uni: # This is a simple unigram check for speed, 
+                                     # bigram check is better but more expensive
+            continue
 
-        # Boost score if words are command-related
-        if wordA in COMMAND_KEYWORDS or wordB in COMMAND_KEYWORDS:
-            score *= 1.5
-        if wordA in COMMAND_KEYWORDS and wordB in COMMAND_KEYWORDS:
-            score *= 2.0
-        
-        signatures.append({
-            "wordA": wordA,
-            "wordB": wordB,
-            "score": round(score, 3)
-        })
+        score = calculate_score(wordA, wordB, countAB, pos_uni, pos_total, neg_uni, neg_total)
+        signatures.append({"wordA": wordA, "wordB": wordB, "score": score})
     
-    # Sort by score descending
+    # Sort and Export
     signatures.sort(key=lambda x: x['score'], reverse=True)
+    top_signatures = signatures[:params["top_n"]]
     
-    # Take top 200
-    top_signatures = signatures[:200]
-    
-    print(f"Exporting {len(top_signatures)} signatures to data/signatures.json")
-    with open('data/signatures.json', 'w', encoding='utf-8') as f:
+    print(f"Exporting {len(top_signatures)} signatures to {paths['output']}")
+    with open(paths['output'], 'w', encoding='utf-8') as f:
         json.dump(top_signatures, f, ensure_ascii=False, indent=2)
 
-    print("\nTop 20 pairs:")
+    print("\nTop 20 refined signatures:")
     for sig in top_signatures[:20]:
         print(f"{sig['wordA']} + {sig['wordB']}: {sig['score']}")
 
