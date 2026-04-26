@@ -104,10 +104,39 @@ Return your analysis in JSON format:
 - `/(시스템|관리자|루트).*(권한|모드|활성)/i`
 - `/(ignore|disregard|forget).*previous.*instructions/i`
 
-## 8. Backend Blockers
-- None reported yet in STATUS.md.
+## 8. Pitch References (Task 1)
 
-## 9. Window=5 Results (Task 4)
+### OWASP LLM Top 10 (2025) Key Stats
+- **Rank #1: Prompt Injection.** 2025년판에서 직접(Direct)뿐만 아니라 **간접(Indirect)** 인젝션(웹페이지, 이메일 등) 위협이 더욱 강조됨.
+- **공격 성공률:** 보호되지 않은 LLM 시스템에 대한 기본 인젝션 성공률은 **90% 이상**으로 보고됨.
+- **방어 효과:** Lakera, PromptGuard 등 전문 가드레일 적용 시 성공률을 **73%에서 10% 미만**으로 감소 가능.
+- **데이터 유출:** 인젝션을 통한 PII(개인정보) 탈취 성공률은 약 **8%** 수준으로 측정됨.
+
+### Real-World Incidents
+- **RoguePilot (2024):** GitHub Codespaces 취약점을 이용해 Copilot이 `GITHUB_TOKEN`을 유출하도록 유도하는 인젝션 발생.
+- **Peer-Review Manipulation (2025):** 논문 PDF에 숨겨진 인젝션을 통해 AI 리뷰어가 무조건 '100점'을 주도록 조작한 사례 보고.
+- **Chevrolet Dealership Chatbot (2023):** "모든 지침 무시" 공격으로 새 차를 1달러에 팔겠다고 약속하게 만든 유명 사례.
+
+### Detection Tool Comparison
+| Feature | Lakera Guard | Meta PromptGuard | InjectScan (Ours) |
+| :--- | :--- | :--- | :--- |
+| **Strategy** | Managed API / Firewall | Classifier Model | **3-Layer Hybrid** |
+| **Detection** | Pattern-based | Transformer Model | **Regex + PMI + Judge** |
+| **Specialty** | Enterprise-grade | High Precision | **Korean Context + PMI** |
+| **Limitation** | High cost per API call | Misses subtle indirects | Optimized for Web Agents |
+
+## 9. Advanced Evasion Techniques (Task 3)
+
+### Latest Hiding Techniques
+1. **CSS Custom Properties (`var(--)`):** 악성 페이로드를 CSS 변수 내에 정의하여 단순 텍스트 검색을 우회.
+2. **Unicode Homoglyphs:** 시각적으로 동일해 보이는 다른 유니코드 문자(예: 라틴 'a' 대신 키릴 'а')를 사용하여 키워드 필터링 무력화.
+3. **HTML Tag Abuse:** 
+   - `<template>`: 브라우저에는 렌더링되지 않지만 LLM 스크래퍼는 읽는 영역.
+   - `<noscript>`: 자바스크립트 활성 시 숨겨지지만 크롤러는 읽는 영역.
+   - `alt` 속성: 이미지 설명 영역에 인젝션 명령어 삽입.
+4. **Invisible Characters:** `U+E0000` (Tag Blocks) 등의 투명 문자를 사용하여 텍스트 사이에 페이로드 은닉.
+
+## 10. Window=5 Results (Task 4)
 - **Top 20 Signatures (Audit Results):**
   1. instructions + previous (176.768)
   2. 가짜입니다 + 기사는 (139.26)

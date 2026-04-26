@@ -1,0 +1,77 @@
+[
+  {
+    "url": "https://www.w3.org/WAI/standards-guidelines/wcag/",
+    "expected": "clean",
+    "reason": "Accessibility focused site with heavy usage of aria-hidden and role attributes."
+  },
+  {
+    "url": "https://www.nytimes.com/",
+    "expected": "clean",
+    "reason": "News site with extensive SEO meta tags, descriptions, and dynamic ad content."
+  },
+  {
+    "url": "https://developer.mozilla.org/en-US/",
+    "expected": "clean",
+    "reason": "Documentation site with many code blocks, technical terms, and complex CSS."
+  },
+  {
+    "url": "https://www.apple.com/",
+    "expected": "clean",
+    "reason": "Heavy use of CSS animations, off-screen text for transitions, and high-quality imagery."
+  },
+  {
+    "url": "https://github.com/trending",
+    "expected": "clean",
+    "reason": "Dynamic content with many technical keywords, SVGs, and hidden UI elements."
+  },
+  {
+    "url": "https://www.wikipedia.org/",
+    "expected": "clean",
+    "reason": "Reference site with many links, hidden navigation elements, and multi-language meta tags."
+  },
+  {
+    "url": "https://www.amazon.com/",
+    "expected": "clean",
+    "reason": "Complex e-commerce page with nested structures, metadata, and scripts."
+  },
+  {
+    "url": "https://www.framer.com/",
+    "expected": "clean",
+    "reason": "Site built with modern web tools, featuring extreme usage of CSS transforms and animations."
+  },
+  {
+    "url": "https://css-tricks.com/",
+    "expected": "clean",
+    "reason": "Technical blog explaining complex CSS properties, containing many code snippets."
+  },
+  {
+    "url": "https://www.naver.com/",
+    "expected": "clean",
+    "reason": "Portal site with massive metadata, dynamic news sections, and localized CSS."
+  },
+  {
+    "url": "https://stripe.com/",
+    "expected": "clean",
+    "reason": "Highly polished site with advanced CSS gradients, animations, and typography."
+  },
+  {
+    "url": "https://www.behance.net/",
+    "expected": "clean",
+    "reason": "Portfolio site with heavy image usage and accessibility metadata (alt text)."
+  },
+  {
+    "url": "https://www.ted.com/",
+    "expected": "clean",
+    "reason": "Video-centric site with transcripts, long meta descriptions, and ARIA roles."
+  },
+  {
+    "url": "https://www.gov.uk/",
+    "expected": "clean",
+    "reason": "Government site with strict accessibility standards and plain text with many links."
+  },
+  {
+    "url": "https://www.producthunt.com/",
+    "expected": "clean",
+    "reason": "Community site with user-generated descriptions, badges, and complex layout CSS."
+  }
+]
