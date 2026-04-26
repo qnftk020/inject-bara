@@ -60,17 +60,24 @@ function scanPatterns(html: string): PatternMatch[] {
     }
   });
 
-  // Hidden CSS
-  $('[style]').each((_, el) => {
+  // Hidden CSS — UI 요소 제외 + 인젝션 어휘 필수 + 중복 제거
+  const INJECT_RE = /\b(ignore|always|you are|override|instruction|previous|forget|pretend|bypass)\b|\b(무시|항상|지시|명령|이전|역할|시스템)\b/i;
+  const hiddenSeen = new Set<string>();
+  $('[style], [hidden]').each((_, el) => {
     const style = parseStyle($(el).attr('style') || '');
     const reasons: string[] = [];
     if (style['display'] === 'none') reasons.push('display:none');
     if (style['visibility'] === 'hidden') reasons.push('visibility:hidden');
     const opacity = parseFloat(style['opacity'] || '1');
     if (!isNaN(opacity) && opacity < 0.1) reasons.push(`opacity:${opacity}`);
+    if ($(el).attr('hidden') !== undefined) reasons.push('hidden attr');
     if (reasons.length === 0) return;
     const text = $(el).text().trim();
-    if (text.length < 30) return;
+    if (text.length < 50) return;  // UI 요소는 대부분 짧음
+    if (!INJECT_RE.test(text)) return;  // 인젝션 어휘 없으면 스킵
+    const key = text.slice(0, 100);
+    if (hiddenSeen.has(key)) return;  // 중복 제거
+    hiddenSeen.add(key);
     matches.push({ patternId: 'hidden-css', patternName: 'Hidden CSS', severity: 20, location: (el as any).name || 'unknown', extractedText: text.slice(0, 200), details: reasons.join(', ') });
   });
 

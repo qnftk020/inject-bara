@@ -350,38 +350,27 @@
     };
   }
 
-  // 서버 측 스캔 (Layer 1+2+3 전체)
+  // 서버 측 Layer 2+3 (클라이언트가 찾은 의심 텍스트만 전송)
   async function scanServer() {
-    const html = document.documentElement.outerHTML;
-    const url = window.location.href;
-    const res = await fetch(SCRIPT_BASE + 'api/scan', {
+    if (!lastResults || lastResults.totalCount === 0) return null;
+    // 의심 텍스트만 추출 (전체 HTML 대신 — 대형 사이트 타임아웃 방지)
+    const fragments = lastResults.matches.map(m => ({
+      text: m.extractedText,
+      patternId: m.patternId,
+      location: m.location,
+    }));
+    const res = await fetch(SCRIPT_BASE + 'api/judge', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ html, url }),
+      body: JSON.stringify({ fragments, url: window.location.href }),
       signal: AbortSignal.timeout(15000),
     });
     if (!res.ok) return null;
     return await res.json();
   }
 
-  // 서버 결과를 클라이언트 결과에 병합
+  // 서버 결과 (PMI + Judge) 를 클라이언트 결과에 병합
   function mergeServerResults(clientResults, server) {
-    // 서버에서 탐지한 패턴 중 클라이언트에 없는 것 추가
-    if (server.patterns) {
-      const clientIds = new Set(clientResults.matches.map(m => m.extractedText));
-      for (const sp of server.patterns) {
-        if (!clientIds.has(sp.extractedText)) {
-          clientResults.matches.push({
-            patternId: sp.patternId,
-            patternName: sp.patternName + ' (server)',
-            severity: sp.severity,
-            location: sp.location,
-            extractedText: sp.extractedText,
-            element: null,
-          });
-        }
-      }
-    }
     // PMI 결과 추가
     if (server.pmi && server.pmi.matchedPairs && server.pmi.matchedPairs.length > 0) {
       clientResults.pmi = server.pmi;
@@ -389,9 +378,23 @@
     // LLM-as-Judge 결과 추가
     if (server.judge) {
       clientResults.judge = server.judge;
+
+      // Judge가 benign이라고 판정한 패턴은 severity 하향
+      if (server.judge.overallVerdict === 'benign') {
+        clientResults.matches.forEach(function (m) {
+          m.severity = Math.round(m.severity * 0.2);
+        });
+      }
     }
-    // 점수 재계산
-    clientResults.totalScore = server.riskScore || clientResults.matches.reduce((s, m) => s + m.severity, 0);
+    // PMI 부스트
+    let score = clientResults.matches.reduce((s, m) => s + m.severity, 0);
+    if (clientResults.pmi && clientResults.pmi.totalScore > 10) {
+      score += Math.min(clientResults.pmi.totalScore, 30);
+    }
+    if (server.judge && server.judge.overallVerdict === 'injection') {
+      score += Math.round(server.judge.highestConfidence * 30);
+    }
+    clientResults.totalScore = score;
     clientResults.totalCount = clientResults.matches.length;
     clientResults.level = classify(clientResults.totalScore);
   }
