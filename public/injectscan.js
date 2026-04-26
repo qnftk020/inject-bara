@@ -45,13 +45,10 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      cursor: grab;
     }
-    #${WIDGET_ID}.dragging { cursor: grabbing; }
     #${WIDGET_ID} .capy {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
+      width: 110px;
+      height: auto;
       cursor: pointer;
       display: block;
       image-rendering: pixelated;
@@ -309,75 +306,6 @@
     setAwake();
     capyImg.classList.add('scanning');
   }
-
-  // ==== Drag to reposition ====
-  let isDragging = false;
-  let dragStartX, dragStartY, widgetStartX, widgetStartY;
-  let hasDragged = false;
-
-  widget.addEventListener('mousedown', function (e) {
-    if (e.target === capyImg) return; // click은 capy에서 처리
-    isDragging = true;
-    hasDragged = false;
-    dragStartX = e.clientX;
-    dragStartY = e.clientY;
-    const rect = widget.getBoundingClientRect();
-    widgetStartX = rect.left;
-    widgetStartY = rect.top;
-    widget.classList.add('dragging');
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', function (e) {
-    if (!isDragging) return;
-    const dx = e.clientX - dragStartX;
-    const dy = e.clientY - dragStartY;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasDragged = true;
-    widget.style.left = (widgetStartX + dx) + 'px';
-    widget.style.top = (widgetStartY + dy) + 'px';
-    widget.style.right = 'auto';
-    widget.style.bottom = 'auto';
-  });
-
-  document.addEventListener('mouseup', function () {
-    if (isDragging) {
-      isDragging = false;
-      widget.classList.remove('dragging');
-    }
-  });
-
-  // Touch support for mobile
-  widget.addEventListener('touchstart', function (e) {
-    if (e.target === capyImg) return;
-    isDragging = true;
-    hasDragged = false;
-    const touch = e.touches[0];
-    dragStartX = touch.clientX;
-    dragStartY = touch.clientY;
-    const rect = widget.getBoundingClientRect();
-    widgetStartX = rect.left;
-    widgetStartY = rect.top;
-    widget.classList.add('dragging');
-  }, { passive: true });
-
-  document.addEventListener('touchmove', function (e) {
-    if (!isDragging) return;
-    const touch = e.touches[0];
-    const dx = touch.clientX - dragStartX;
-    const dy = touch.clientY - dragStartY;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasDragged = true;
-    widget.style.left = (widgetStartX + dx) + 'px';
-    widget.style.top = (widgetStartY + dy) + 'px';
-    widget.style.right = 'auto';
-    widget.style.bottom = 'auto';
-  }, { passive: true });
-
-  document.addEventListener('touchend', function () {
-    if (isDragging) {
-      isDragging = false;
-      widget.classList.remove('dragging');
-    }
-  });
 
   capyImg.addEventListener('click', async function () {
     if (currentState === STATE.IDLE) {
