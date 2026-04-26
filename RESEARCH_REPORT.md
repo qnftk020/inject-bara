@@ -137,7 +137,30 @@ InjectScan은 웹 페이지에 은닉된 프롬프트 인젝션을 탐지하기 
 
 상세 벤치마크 원천 데이터는 `data/pmi_benchmark_results.json`에 보관되어 있습니다.
 
-## 8. English PMI Validation (Task 2)
+---
+
+## 8. Static Pattern Analysis (Layer 1)
+
+정적 패턴 7종에 대한 기술적 변칙 사례와 오탐 분석 결과입니다.
+
+### 8.1. Evasion vs. Benign Analysis
+| Pattern ID | Evasion Technique (TP) | Benign Use-case (FP) | Detection Challenge |
+| :--- | :--- | :--- | :--- |
+| **White-on-white** | Alpha transparency (`rgba`), CSS variables | Contrast on non-standard BG | 정적 분석 시 배경색 계산의 복잡성 |
+| **Zero-width** | Invisible char encoding | LTR/RTL control markers | 의미 없는 제어 문자와의 구분 |
+| **Hidden CSS** | `clip-path`, `opacity:0`, `scale(0)` | Modals, dynamic UI components | 브라우저 렌더링 결과(Computed Style) 필요 |
+| **Off-screen** | `text-indent`, `100vw` units | Accessibility "Skip to content" | 정당한 접근성 요소와의 구분 |
+| **Suspicious Meta** | Metadata instruction smuggling | Long SEO/OG descriptions | 메타 데이터 내 '명령어 키워드' 비중 분석 필요 |
+
+### 8.2. Static Layer Reliability Stats
+테스트셋(`layer1_patterns_testset.json`) 기반 예상 지표:
+- **Max Recall (Raw HTML)**: **92%** (대부분의 CSS 은닉 기법은 DOM 파싱으로 포착 가능)
+- **Baseline FPR (False Positive Rate)**: **15~20%** (모달, 접근성 요소 등의 정상적인 숨김 처리가 노이즈로 작용)
+
+**보안 강화 제언**: 
+Layer 1에서 발견된 '숨겨진 텍스트'는 그 자체만으로는 위험하지 않으므로, 반드시 **Layer 2 (PMI)**를 통해 해당 텍스트에 '공격 명령어 시그니처'가 포함되어 있는지를 교차 검증해야 오탐을 획기적으로 줄일 수 있습니다.
+
+## 9. English PMI Validation (Task 2)
 
 상위 50개 단어쌍에 대한 감사 결과:
 - **Injection-Signal (80%)**: `instructions + previous`, `detailed + instructions`, `detection + evade`, `automate + script`, `all + filters`, `bypass + list` 등 명령어 패턴이 주를 이룸.
