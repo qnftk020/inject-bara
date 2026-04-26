@@ -309,8 +309,8 @@
         currentState = STATE.CLEAN;
       }
 
-      // Step 2: 서버 측 Layer 2+3 (항상 실행)
-      {
+      // Step 2: 서버 측 Layer 2+3 (L1에서 패턴 발견 시에만)
+      if (lastResults.totalCount > 0) {
         showBadge('L2+L3 분석 중...', 'scanning');
         try {
           const serverResults = await scanServer();
@@ -368,18 +368,15 @@
 
   // 서버 측 Layer 2+3 (항상 실행)
   async function scanServer() {
-    var fragments;
-    if (lastResults && lastResults.totalCount > 0) {
-      fragments = lastResults.matches.map(m => ({
-        text: m.extractedText,
-        patternId: m.patternId,
-        location: m.location,
-      }));
-    } else {
-      // L1에서 못 잡아도 페이지 본문을 L2+L3에 전달
-      var bodyText = (document.body.innerText || '').slice(0, 3000);
-      fragments = [{ text: bodyText, patternId: 'full-page', location: 'body' }];
+    if (!lastResults || lastResults.totalCount === 0) {
+      console.log('[InjectScan] L1 found 0 patterns — skipping server scan');
+      return null;
     }
+    var fragments = lastResults.matches.map(m => ({
+      text: m.extractedText,
+      patternId: m.patternId,
+      location: m.location,
+    }));
     console.log('[InjectScan] Sending', fragments.length, 'fragments to', SCRIPT_BASE + 'api/judge');
     const res = await fetch(SCRIPT_BASE + 'api/judge', {
       method: 'POST',
