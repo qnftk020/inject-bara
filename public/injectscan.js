@@ -523,18 +523,21 @@
       if (!el || isSelf(el) || isInNonContent(el) || seen.has(el)) return;
       const text = node.nodeValue;
       const total = text.length;
-      if (total < 5) return;
+      if (total < 10) return;
       const zwc = (text.match(ZWC) || []).length;
       if (zwc === 0) return;
       const ratio = zwc / total;
-      if (ratio > 0.05 || zwc >= 3) {
+      // ratio > 10% (강화된 기준: 한국어 위키 등에서 줄바꿈 힌트용 ZW 오탐 방지)
+      // 또는 ZW 제거 후 텍스트가 인젝션 어휘를 포함할 때만 탐지
+      const cleaned = text.replace(ZWC, '');
+      if (ratio > 0.10 && looksLikeInjection(cleaned)) {
         seen.add(el);
         matches.push({
           patternId: 'zero-width',
           patternName: 'Zero-width characters',
           severity: 30,
           location: cssPath(el),
-          extractedText: text.replace(ZWC, '·').slice(0, 200) + ` (${zwc} zero-width chars)`,
+          extractedText: cleaned.slice(0, 200) + ` (${zwc} zero-width chars, ${(ratio*100).toFixed(1)}%)`,
           element: el,
         });
       }
