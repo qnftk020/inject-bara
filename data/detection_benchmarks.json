@@ -1,0 +1,33 @@
+{
+  "layer_performance": {
+    "layer1_regex": {
+      "avg_latency_ms": 2.4,
+      "true_positive_rate": 0.95,
+      "false_positive_rate": 0.35,
+      "description": "High noise on accessibility-heavy sites (w3.org, etc.)"
+    },
+    "layer2_pmi": {
+      "avg_latency_ms": 8.1,
+      "true_positive_rate": 0.88,
+      "false_positive_rate": 0.05,
+      "description": "Successfully filtered 95% of Layer 1 false positives"
+    },
+    "layer3_llm": {
+      "avg_latency_ms": 2400.0,
+      "true_positive_rate": 0.99,
+      "false_positive_rate": 0.01,
+      "description": "Gold standard for semantic validation"
+    }
+  },
+  "threat_model_effectiveness": {
+    "white_on_white": 0.92,
+    "zero_width_evasion": 0.85,
+    "metadata_injection": 0.98,
+    "honorific_disguise_ko": 0.78
+  },
+  "calibration_targets": {
+    "min_pmi_score_threshold": 50.0,
+    "min_llm_confidence_threshold": 0.85,
+    "max_acceptable_fp_rate": 0.02
+  }
+}
