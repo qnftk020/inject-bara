@@ -38,30 +38,35 @@
       margin: 0;
       padding: 0;
       height: 100%;
-    }
-    html {
-      scroll-behavior: smooth;
+      overflow: hidden;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", sans-serif;
       background: var(--bg);
       color: var(--ink);
       line-height: 1.6;
-      overflow-x: hidden;
-      overflow-y: scroll;
-      scroll-snap-type: y proximity;
       word-break: keep-all;
       overflow-wrap: break-word;
     }
 
+    /* ===== Fullpage Scroll Container ===== */
+    .fullpage-container {
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
     /* ===== Snap Section ===== */
     .snap-section {
-      min-height: 100vh;
+      height: 100vh;
       scroll-snap-align: start;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     /* ===== Hero ===== */
@@ -500,8 +505,10 @@
     /* Footer */
     .footer {
       max-width: 880px;
-      margin: 0 auto;
+      margin: auto auto 0;
       padding: 32px 24px 48px;
+      width: 100%;
+      flex-shrink: 0;
       text-align: center;
       color: var(--ink-muted);
       font-size: 13px;
@@ -575,11 +582,14 @@
       .bm-link { padding: 14px 22px; font-size: 14px; }
       .code-block { font-size: 11px; word-break: break-all; }
       h2 { font-size: 24px; }
-      .snap-section { min-height: auto; scroll-snap-align: none; }
+      html, body { overflow: visible; height: auto; }
+      .fullpage-container { height: auto; overflow-y: visible; scroll-snap-type: none; }
+      .snap-section { height: auto; min-height: auto; scroll-snap-align: none; overflow-y: visible; }
     }
   </style>
 </head>
 <body>
+<div class="fullpage-container">
   <section class="hero snap-section">
     <span class="tag">🦫 인젝바라 Bookmarklet</span>
     <div class="capy-stage">
@@ -741,14 +751,27 @@
         <span class="score warn">예상 50점 ⚠️ Suspicious</span>
       </a>
     </div>
-  </section>
 
-  <footer class="footer">
-    <div>인젝바라 · CMUX × AIM 해커톤 2026 · <a href="https://github.com/qnftk020/cmux-vibe">GitHub</a></div>
-  </footer>
+    <footer class="footer">
+      <div>인젝바라 · CMUX × AIM 해커톤 2026 · <a href="https://github.com/qnftk020/cmux-vibe">GitHub</a></div>
+    </footer>
+  </section>
+</div><!-- /fullpage-container -->
 
   <script>
     (function () {
+      // Anchor links inside fullpage-container
+      var container = document.querySelector('.fullpage-container');
+      document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          var target = document.querySelector(a.getAttribute('href'));
+          if (target && container) {
+            e.preventDefault();
+            container.scrollTo({ top: target.offsetTop, behavior: 'smooth' });
+          }
+        });
+      });
+
       // Bookmarklet code — 현재 호스트에서 동적 생성
       const DEPLOY_URL = window.location.origin;
       // 스크립트 로드 실패 시 안전 안내 토스트 표시
