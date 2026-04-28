@@ -1,12 +1,14 @@
 import { NextRequest } from 'next/server';
 import { guard } from '@/guard';
-import { corsPreflight, jsonError, jsonOk, resolveHtmlInput } from '../_shared';
+import { checkRateLimit, corsPreflight, jsonError, jsonOk, resolveHtmlInput } from '../_shared';
 
 export async function OPTIONS() {
   return corsPreflight();
 }
 
 export async function POST(req: NextRequest) {
+  const limited = checkRateLimit(req);
+  if (limited) return limited;
   try {
     const body = await req.json();
     const policy = body.policy ?? 'warn';

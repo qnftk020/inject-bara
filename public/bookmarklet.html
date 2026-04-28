@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>인젝바라 — 어느 사이트든 한 클릭으로 prompt injection 검출</title>
   <meta name="description" content="북마크바에 인젝바라를 끌어다 놓으세요. 어느 페이지에서든 클릭 한 번으로 AI를 속이는 숨겨진 명령을 잡아냅니다.">
+  <link rel="icon" href="/capybara-awake.webp" type="image/webp">
+  <link rel="canonical" href="https://injectbara.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="인젝바라 — AI Prompt Injection 검출기">
+  <meta property="og:description" content="북마크 한 번으로 웹페이지의 숨겨진 AI 프롬프트 인젝션을 자동 탐지합니다.">
+  <meta property="og:image" content="https://injectbara.vercel.app/capybara-warning.png">
+  <meta property="og:url" content="https://injectbara.vercel.app/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="인젝바라 — AI Prompt Injection 검출기">
+  <meta name="twitter:description" content="북마크 한 번으로 웹페이지의 숨겨진 AI 프롬프트 인젝션을 자동 탐지합니다.">
+  <meta name="twitter:image" content="https://injectbara.vercel.app/capybara-warning.png">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -38,7 +49,7 @@
       line-height: 1.6;
       overflow-x: hidden;
       overflow-y: scroll;
-      scroll-snap-type: y mandatory;
+      scroll-snap-type: y proximity;
       word-break: keep-all;
       overflow-wrap: break-word;
     }
@@ -109,11 +120,8 @@
       margin: 0 auto 32px;
       position: relative;
     }
-    .capy-stage img {
+    .capy-stage picture {
       width: 280px;
-      height: auto;
-      image-rendering: pixelated;
-      filter: drop-shadow(0 12px 20px rgba(217, 119, 6, 0.18));
       position: absolute;
       left: 50%;
       bottom: 0;
@@ -121,7 +129,13 @@
       opacity: 0;
       transition: opacity 0.4s ease;
     }
-    .capy-stage img.active {
+    .capy-stage picture img {
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 12px 20px rgba(217, 119, 6, 0.18));
+    }
+    .capy-stage picture.active {
       opacity: 1;
       animation: floaty 3s ease-in-out infinite;
     }
@@ -361,9 +375,12 @@
     }
     .step-card .capy-mini {
       width: 110px;
-      image-rendering: pixelated;
       margin: 0 auto 16px;
       display: block;
+    }
+    .step-card .capy-mini img {
+      width: 100%;
+      image-rendering: pixelated;
     }
     .step-card .num {
       display: inline-flex;
@@ -483,9 +500,8 @@
     /* Footer */
     .footer {
       max-width: 880px;
-      margin: auto auto 0;
+      margin: 0 auto;
       padding: 32px 24px 48px;
-      width: 100%;
       text-align: center;
       color: var(--ink-muted);
       font-size: 13px;
@@ -552,17 +568,25 @@
     @media (max-width: 720px) {
       .problem-grid, .steps, .test-cards, .layers { grid-template-columns: 1fr; }
       .hero h1 { font-size: 28px; }
+      .hero p.lead { font-size: 14px; }
+      .capy-stage { width: 260px; height: 180px; }
+      .capy-stage picture { width: 220px; margin-left: -110px; }
+      .install-callout { padding: 20px 16px 18px; }
+      .bm-link { padding: 14px 22px; font-size: 14px; }
+      .code-block { font-size: 11px; word-break: break-all; }
+      h2 { font-size: 24px; }
+      .snap-section { min-height: auto; scroll-snap-align: none; }
     }
   </style>
 </head>
 <body>
-  <header class="hero snap-section">
+  <section class="hero snap-section">
     <span class="tag">🦫 인젝바라 Bookmarklet</span>
     <div class="capy-stage">
       <span class="stage-label" id="stage-label">자고 있어요</span>
-      <img id="capy-sleep" class="active" src="/capybara-sleep.png" alt="자고 있는 카피바라">
-      <img id="capy-awake" src="/capybara-awake.png" alt="깨어난 카피바라">
-      <img id="capy-warning" src="/capybara-warning.png" alt="워닝 카피바라">
+      <picture id="capy-sleep" class="active"><source srcset="/capybara-sleep.webp" type="image/webp"><img src="/capybara-sleep.png" alt="자고 있는 카피바라"></picture>
+      <picture id="capy-awake"><source srcset="/capybara-awake.webp" type="image/webp"><img src="/capybara-awake.png" alt="깨어난 카피바라"></picture>
+      <picture id="capy-warning"><source srcset="/capybara-warning.webp" type="image/webp"><img src="/capybara-warning.png" alt="워닝 카피바라"></picture>
     </div>
     <h1>AI가 속기 전에<br><span class="accent">카피바라가 깨워줍니다</span></h1>
     <p class="lead">사람 눈엔 안 보이지만 AI는 명령으로 읽어버리는 한 줄, prompt&nbsp;injection.<br>북마크바에 인젝바라를 끌어다 놓으면 어느 페이지든 한 클릭으로 검사합니다.</p>
@@ -579,7 +603,7 @@
     <div class="below-callout">
       <a class="ghost-btn" href="#how">어떻게 작동하나 ↓</a>
     </div>
-  </header>
+  </section>
 
   <section id="problem" class="snap-section">
     <span class="section-tag">왜 필요한가</span>
@@ -615,19 +639,19 @@
     <div class="steps">
       <div class="step-card">
         <div class="num">1</div>
-        <img class="capy-mini" src="/capybara-sleep.png" alt="">
+        <picture class="capy-mini"><source srcset="/capybara-sleep.webp" type="image/webp"><img src="/capybara-sleep.png" alt=""></picture>
         <h3>자고 있어요</h3>
         <p>북마크 클릭하면 우하단에 인젝바라가 자고 있는 상태로 등장합니다. 사이트는 평소대로 사용.</p>
       </div>
       <div class="step-card">
         <div class="num">2</div>
-        <img class="capy-mini" src="/capybara-awake.png" alt="">
+        <picture class="capy-mini"><source srcset="/capybara-awake.webp" type="image/webp"><img src="/capybara-awake.png" alt=""></picture>
         <h3>깨우면 스캔</h3>
         <p>인젝바라를 클릭하면 눈을 뜨고 페이지 전체를 스캔. 4가지 패턴(흰 글씨, 제로폭 문자, 의심 메타, 0px 글씨) 검사.</p>
       </div>
       <div class="step-card">
         <div class="num">3</div>
-        <img class="capy-mini" src="/capybara-warning.png" alt="">
+        <picture class="capy-mini"><source srcset="/capybara-warning.webp" type="image/webp"><img src="/capybara-warning.png" alt=""></picture>
         <h3>발견하면 경고</h3>
         <p>인젝션 발견 시 빨간 ! 표시 + 배지. 클릭하면 어떤 패턴이 어디 있는지 상세 패널 + "인젝션 숨기기" 버튼.</p>
       </div>
@@ -717,16 +741,16 @@
         <span class="score warn">예상 50점 ⚠️ Suspicious</span>
       </a>
     </div>
-
-    <footer class="footer">
-      <div>인젝바라 · CMUX × AIM 해커톤 2026 · <a href="https://github.com/qnftk020/cmux-vibe">GitHub</a></div>
-    </footer>
   </section>
+
+  <footer class="footer">
+    <div>인젝바라 · CMUX × AIM 해커톤 2026 · <a href="https://github.com/qnftk020/cmux-vibe">GitHub</a></div>
+  </footer>
 
   <script>
     (function () {
-      // Bookmarklet code — Vercel URL 고정 (어디서든 동작)
-      const DEPLOY_URL = 'https://injectbara.vercel.app';
+      // Bookmarklet code — 현재 호스트에서 동적 생성
+      const DEPLOY_URL = window.location.origin;
       // 스크립트 로드 실패 시 안전 안내 토스트 표시
       const bmCode = [
         "javascript:(function(){",
@@ -759,7 +783,7 @@
       let idx = 0;
       const labelEl = document.getElementById('stage-label');
       function cycle() {
-        document.querySelectorAll('.capy-stage img').forEach(img => img.classList.remove('active'));
+        document.querySelectorAll('.capy-stage picture').forEach(p => p.classList.remove('active'));
         const cur = states[idx];
         document.getElementById(cur.id).classList.add('active');
         labelEl.textContent = cur.label;

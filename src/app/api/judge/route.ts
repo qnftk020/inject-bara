@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { checkInjectionEmbedding } from '@/embedding';
 import { hasApiKey, judge, type EnrichedFragment } from '@/judge';
 import { matchPmi } from '@/pmi/match';
-import { corsPreflight, jsonError, jsonOk } from '../_shared';
+import { checkRateLimit, corsPreflight, jsonError, jsonOk } from '../_shared';
 
 interface JudgeRequestFragment {
   text: string;
@@ -15,6 +15,8 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: NextRequest) {
+  const limited = checkRateLimit(req);
+  if (limited) return limited;
   try {
     const { fragments, url } = await req.json();
     if (!Array.isArray(fragments) || fragments.length === 0) {

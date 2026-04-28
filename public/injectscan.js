@@ -99,7 +99,7 @@
       position: fixed;
       bottom: 180px;
       right: 24px;
-      width: 400px;
+      width: min(400px, calc(100vw - 32px));
       max-height: 520px;
       overflow-y: auto;
       background: #fff;
@@ -657,7 +657,7 @@
     var bgs = { info: '#dbeafe', warn: '#fef3c7', error: '#fee2e2' };
     var d = document.createElement('div');
     d.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:' + (bgs[type] || bgs.info) + ';color:' + (colors[type] || colors.info) + ';padding:16px 24px;border-radius:12px;z-index:2147483647;font-family:-apple-system,sans-serif;max-width:420px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,0.15);text-align:center;border:1px solid ' + (colors[type] || colors.info) + '22';
-    d.innerHTML = '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + title + '</div><div style="font-size:12px;opacity:0.85">' + message + '</div>';
+    d.innerHTML = '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + escapeHtml(title) + '</div><div style="font-size:12px;opacity:0.85">' + escapeHtml(message) + '</div>';
     document.body.appendChild(d);
     setTimeout(function () { d.style.transition = 'opacity 0.5s'; d.style.opacity = '0'; setTimeout(function () { d.remove(); }, 500); }, 6000);
   }
@@ -743,7 +743,7 @@
           <strong>인젝바라</strong>
           <span class="meta">${lvl.label} · ${r.totalCount}건 · ${r.totalScore}점</span>
         </div>
-        <span class="close">✕</span>
+        <span class="close" role="button" aria-label="패널 닫기" tabindex="0">✕</span>
       </div>
       <div class="panel-body">${matchesHtml}${pmiHtml}${embHtml}${judgeHtml}</div>
       <div class="panel-actions">
