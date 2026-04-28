@@ -19,8 +19,6 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #faf5e9;
-      --bg-warm: #f5ecd5;
       --ink: #1a1612;
       --ink-soft: #5a4d3f;
       --ink-muted: #8a7c6a;
@@ -32,54 +30,50 @@
       --good: #10b981;
       --good-soft: #d1fae5;
       --line: #e8dfc8;
-      --card: #fffaee;
+      --card: rgba(255,255,255,0.55);
     }
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      background: var(--bg);
-    }
-    body {
+      margin: 0; padding: 0;
+      height: 100%; overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", sans-serif;
       color: var(--ink);
       line-height: 1.6;
       word-break: keep-all;
       overflow-wrap: break-word;
+      background: #faf5e9;
     }
 
-    /* ===== Fullpage Section ===== */
+    /* ===== Fullpage — baemin-style stacked slide ===== */
+    .fp-wrap {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
     .fp-section {
       position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 100vh;
+      inset: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-      pointer-events: none;
+      transform: translateY(100%);
+      transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+      will-change: transform;
       overflow-y: auto;
-      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
     }
     .fp-section.active {
-      opacity: 1;
       transform: translateY(0);
-      pointer-events: auto;
+      z-index: 2;
+    }
+    .fp-section.above {
+      transform: translateY(-100%);
       z-index: 1;
     }
-    .fp-section.exit-up {
-      opacity: 0;
-      transform: translateY(-40px);
-    }
-    .fp-section.exit-down {
-      opacity: 0;
-      transform: translateY(40px);
+    .fp-section.below {
+      transform: translateY(100%);
+      z-index: 1;
     }
 
-    /* Section inner wrapper — centers content, constrains width */
     .fp-inner {
       max-width: 880px;
       width: 100%;
@@ -87,563 +81,250 @@
       margin: auto;
     }
 
-    /* ===== Dot Navigation ===== */
-    .fp-nav {
+    /* ===== Section BG colors (배민 스타일 — 섹션마다 다른 색) ===== */
+    .s-hero     { background: #faf5e9; }
+    .s-problem  { background: #fef3c7; }
+    .s-how      { background: #ecfdf5; }
+    .s-defense  { background: #1a1612; color: #f5e6c8; }
+    .s-install  { background: #fff7ed; }
+    .s-test     { background: #faf5e9; }
+
+    /* Dark section overrides */
+    .s-defense .section-tag { color: var(--accent-soft); }
+    .s-defense h2 { color: #fff; }
+    .s-defense .section-sub { color: #c4b89a; }
+    .s-defense .layer-card {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.12);
+    }
+    .s-defense .layer-card h3 { color: #fff; }
+    .s-defense .layer-card p { color: #c4b89a; }
+    .s-defense .layer-card .layer-num { background: var(--accent); }
+    .s-defense .layer-card .layer-attack { background: rgba(245,158,11,0.15); color: var(--accent-soft); }
+    .s-defense .defense-note { background: rgba(255,255,255,0.06); border-left-color: var(--accent-soft); color: #c4b89a; }
+    .s-defense .defense-note strong { color: #fff; }
+
+    /* ===== Scroll hint ===== */
+    .scroll-hint {
       position: fixed;
-      right: 24px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 100;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      font-size: 12px;
+      color: var(--ink-muted);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.4s;
     }
-    .fp-nav button {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 2px solid var(--ink-muted);
-      background: transparent;
-      cursor: pointer;
-      padding: 0;
-      transition: all 0.3s ease;
-      position: relative;
+    .scroll-hint .arrow {
+      width: 20px;
+      height: 20px;
+      border-right: 2px solid var(--ink-muted);
+      border-bottom: 2px solid var(--ink-muted);
+      transform: rotate(45deg);
+      animation: arrow-bob 1.5s ease-in-out infinite;
     }
-    .fp-nav button.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      transform: scale(1.3);
+    @keyframes arrow-bob {
+      0%, 100% { translate: 0 0; opacity: 0.3; }
+      50% { translate: 0 6px; opacity: 1; }
     }
-    .fp-nav button:hover {
-      border-color: var(--accent);
-    }
-    .fp-nav .fp-nav-label {
-      position: absolute;
-      right: 22px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: var(--ink);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-    .fp-nav button:hover .fp-nav-label {
-      opacity: 1;
-    }
+    .scroll-hint.hide { opacity: 0; pointer-events: none; }
+    /* Dark bg hint */
+    .scroll-hint.on-dark { color: #8a7c6a; }
+    .scroll-hint.on-dark .arrow { border-color: #8a7c6a; }
 
-    /* ===== Scroll Progress Bar ===== */
-    .fp-progress {
+    /* ===== Section counter (배민 스타일 작은 인디케이터) ===== */
+    .fp-counter {
       position: fixed;
-      top: 0;
-      left: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent-soft), var(--accent));
-      z-index: 101;
-      transition: width 0.5s ease;
+      bottom: 28px;
+      right: 28px;
+      z-index: 50;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      font-variant-numeric: tabular-nums;
+      transition: color 0.4s;
     }
+    .fp-counter.on-dark { color: #8a7c6a; }
 
     /* ===== Hero ===== */
-    .hero-inner {
-      text-align: center;
-    }
+    .hero-inner { text-align: center; }
     .hero-inner .tag {
       display: inline-block;
       background: var(--accent-bg);
       color: var(--accent);
-      font-size: 12px;
-      font-weight: 800;
+      font-size: 12px; font-weight: 800;
       letter-spacing: 0.5px;
-      padding: 6px 14px;
-      border-radius: 100px;
-      margin-bottom: 24px;
-      text-transform: uppercase;
+      padding: 6px 14px; border-radius: 100px;
+      margin-bottom: 20px;
     }
     .hero-inner h1 {
-      font-size: 42px;
-      font-weight: 900;
-      letter-spacing: -1.5px;
-      line-height: 1.15;
-      margin-bottom: 18px;
+      font-size: 44px; font-weight: 900;
+      letter-spacing: -1.5px; line-height: 1.15;
+      margin-bottom: 16px;
     }
     .hero-inner h1 .accent {
       color: var(--accent);
-      position: relative;
-      white-space: nowrap;
+      position: relative; white-space: nowrap;
     }
     .hero-inner h1 .accent::after {
       content: "";
-      position: absolute;
-      bottom: 4px;
-      left: 0;
-      right: 0;
-      height: 8px;
-      background: var(--accent-bg);
-      z-index: -1;
-      border-radius: 2px;
+      position: absolute; bottom: 4px; left: 0; right: 0;
+      height: 8px; background: var(--accent-bg);
+      z-index: -1; border-radius: 2px;
     }
     .hero-inner p.lead {
-      font-size: 16px;
-      color: var(--ink-soft);
-      max-width: 560px;
-      margin: 0 auto 32px;
+      font-size: 16px; color: var(--ink-soft);
+      max-width: 540px; margin: 0 auto 28px;
     }
-
     .capy-stage {
-      width: 280px;
-      height: 200px;
-      margin: 0 auto 24px;
-      position: relative;
+      width: 260px; height: 190px;
+      margin: 0 auto 20px; position: relative;
     }
     .capy-stage picture {
-      width: 240px;
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      margin-left: -120px;
-      opacity: 0;
-      transition: opacity 0.4s ease;
+      width: 220px; position: absolute;
+      left: 50%; bottom: 0; margin-left: -110px;
+      opacity: 0; transition: opacity 0.4s ease;
     }
     .capy-stage picture img {
-      width: 100%;
-      height: auto;
+      width: 100%; height: auto;
       image-rendering: pixelated;
-      filter: drop-shadow(0 12px 20px rgba(217, 119, 6, 0.18));
+      filter: drop-shadow(0 10px 18px rgba(217, 119, 6, 0.18));
     }
-    .capy-stage picture.active {
-      opacity: 1;
-      animation: floaty 3s ease-in-out infinite;
-    }
-    @keyframes floaty {
-      0%, 100% { translate: 0 0; }
-      50% { translate: 0 -6px; }
-    }
+    .capy-stage picture.active { opacity: 1; animation: floaty 3s ease-in-out infinite; }
+    @keyframes floaty { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
     .capy-stage .stage-label {
-      position: absolute;
-      top: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(26, 22, 18, 0.85);
-      color: #fff;
-      font-size: 11px;
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-weight: 600;
+      position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+      background: rgba(26,22,18,0.85); color: #fff;
+      font-size: 11px; padding: 3px 10px; border-radius: 100px; font-weight: 600;
     }
-
     .install-callout {
-      margin: 24px auto 12px;
-      max-width: 440px;
-      background: var(--card);
+      margin: 20px auto 0; max-width: 420px;
+      background: rgba(255,250,238,0.8);
       border: 2px dashed var(--accent-soft);
-      border-radius: 18px;
-      padding: 22px 20px 18px;
-      text-align: center;
+      border-radius: 18px; padding: 20px 18px 16px; text-align: center;
     }
-    .install-callout .callout-title {
-      display: block;
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--ink);
-      margin-bottom: 4px;
-    }
-    .install-callout .callout-sub {
-      display: block;
-      font-size: 13px;
-      color: var(--ink-soft);
-      margin-bottom: 14px;
-    }
+    .install-callout .callout-title { display: block; font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+    .install-callout .callout-sub { display: block; font-size: 13px; color: var(--ink-soft); margin-bottom: 12px; }
     .install-callout .drag-arrow {
-      font-size: 22px;
-      color: var(--accent);
-      margin-bottom: 4px;
+      font-size: 20px; color: var(--accent); margin-bottom: 2px;
       animation: drag-bounce 1.4s ease-in-out infinite;
     }
-    @keyframes drag-bounce {
-      0%, 100% { transform: translateY(4px); opacity: 0.45; }
-      50% { transform: translateY(-2px); opacity: 1; }
-    }
-    .install-callout .shortcut {
-      display: block;
-      font-size: 11px;
-      color: var(--ink-muted);
-      line-height: 1.8;
-      margin-top: 14px;
-    }
+    @keyframes drag-bounce { 0%, 100% { transform: translateY(4px); opacity: 0.45; } 50% { transform: translateY(-2px); opacity: 1; } }
+    .install-callout .shortcut { display: block; font-size: 11px; color: var(--ink-muted); line-height: 1.8; margin-top: 12px; }
     .install-callout kbd {
-      display: inline-block;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-bottom-width: 2px;
-      border-radius: 4px;
-      padding: 1px 5px;
-      margin: 0 1px;
-      font-family: ui-monospace, monospace;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--ink);
+      display: inline-block; background: #fff; border: 1px solid var(--line);
+      border-bottom-width: 2px; border-radius: 4px; padding: 1px 5px; margin: 0 1px;
+      font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700;
     }
     .bm-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, var(--accent-soft) 0%, var(--accent) 100%);
-      color: #fff !important;
-      padding: 16px 28px;
-      border-radius: 14px;
-      text-decoration: none;
-      font-weight: 800;
-      font-size: 15px;
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--accent-soft), var(--accent));
+      color: #fff !important; padding: 15px 26px; border-radius: 14px;
+      text-decoration: none; font-weight: 800; font-size: 15px;
       box-shadow: 0 8px 20px rgba(217, 119, 6, 0.35);
-      cursor: grab;
-      transition: transform 0.15s, box-shadow 0.15s;
+      cursor: grab; transition: transform 0.15s, box-shadow 0.15s;
       position: relative;
     }
-    .bm-link:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 28px rgba(217, 119, 6, 0.45);
-    }
+    .bm-link:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(217, 119, 6, 0.45); }
     .bm-link:active { cursor: grabbing; transform: scale(0.97); }
     .bm-link::after {
-      content: "";
-      position: absolute;
-      inset: -4px;
-      border-radius: 16px;
-      border: 2px solid var(--accent-soft);
-      opacity: 0.6;
-      animation: pulse 2s ease-out infinite;
-      pointer-events: none;
+      content: ""; position: absolute; inset: -4px; border-radius: 16px;
+      border: 2px solid var(--accent-soft); opacity: 0.6;
+      animation: pulse 2s ease-out infinite; pointer-events: none;
     }
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.6; }
-      100% { transform: scale(1.18); opacity: 0; }
-    }
-    .scroll-hint {
-      margin-top: 16px;
-      font-size: 13px;
-      color: var(--ink-muted);
-      animation: hint-fade 2s ease-in-out infinite;
-    }
-    @keyframes hint-fade {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
-    }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.18); opacity: 0; } }
 
-    /* ===== Section Shared ===== */
-    .section-tag {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    h2 {
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      line-height: 1.25;
-      margin-bottom: 14px;
-    }
-    .section-sub {
-      color: var(--ink-soft);
-      font-size: 16px;
-      max-width: 580px;
-      margin-bottom: 32px;
-    }
+    /* ===== Shared ===== */
+    .section-tag { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+    h2 { font-size: 32px; font-weight: 800; letter-spacing: -0.8px; line-height: 1.25; margin-bottom: 14px; }
+    .section-sub { color: var(--ink-soft); font-size: 16px; max-width: 580px; margin-bottom: 32px; }
 
     /* ===== Problem ===== */
-    .problem-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    .demo-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 22px;
-    }
-    .demo-card .card-label {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      padding: 4px 10px;
-      border-radius: 100px;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-    }
+    .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .demo-card { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 22px; }
+    .demo-card .card-label { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 100px; margin-bottom: 10px; text-transform: uppercase; }
     .demo-card.bad .card-label { background: var(--warn-soft); color: var(--warn); }
     .demo-card.good .card-label { background: var(--good-soft); color: #047857; }
-    .demo-card h3 {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: var(--ink-soft);
-    }
-    .demo-card .body {
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--ink);
-      padding: 12px;
-      background: var(--bg-warm);
-      border-radius: 10px;
-      font-family: ui-monospace, "SF Mono", Menlo, monospace;
-    }
+    .demo-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--ink-soft); }
+    .demo-card .body { font-size: 13px; line-height: 1.6; padding: 12px; border-radius: 10px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
     .demo-card.bad .body { background: #fff5f5; }
     .demo-card.good .body { background: #f0fdf4; }
-
-    .injection-example {
-      background: var(--ink);
-      color: #f5e6c8;
-      padding: 20px 24px;
-      border-radius: 14px;
-      font-family: ui-monospace, "SF Mono", Menlo, monospace;
-      font-size: 13px;
-      line-height: 1.65;
-      margin-top: 20px;
-      overflow-x: auto;
-    }
-    .injection-example .comment { color: #8a7c6a; }
-    .injection-example .tag-html { color: #f97316; }
-    .injection-example .attr { color: #fbbf24; }
-    .injection-example .str { color: #86efac; }
-    .injection-example .danger { background: rgba(220, 38, 38, 0.25); padding: 1px 4px; border-radius: 3px; }
+    .injection-example { background: var(--ink); color: #f5e6c8; padding: 18px 22px; border-radius: 14px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; line-height: 1.6; margin-top: 18px; overflow-x: auto; }
+    .injection-example .comment { color: #8a7c6a; } .injection-example .tag-html { color: #f97316; } .injection-example .attr { color: #fbbf24; } .injection-example .str { color: #86efac; } .injection-example .danger { background: rgba(220, 38, 38, 0.25); padding: 1px 4px; border-radius: 3px; }
 
     /* ===== How ===== */
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-    .step-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 24px 20px;
-      text-align: center;
-    }
-    .step-card .capy-mini {
-      width: 100px;
-      margin: 0 auto 14px;
-      display: block;
-    }
-    .step-card .capy-mini img {
-      width: 100%;
-      image-rendering: pixelated;
-    }
-    .step-card .num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 800;
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-    .step-card h3 {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .step-card p {
-      font-size: 13px;
-      color: var(--ink-soft);
-      line-height: 1.5;
-    }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .step-card { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 24px 20px; text-align: center; }
+    .step-card .capy-mini { width: 100px; margin: 0 auto 14px; display: block; }
+    .step-card .capy-mini img { width: 100%; image-rendering: pixelated; }
+    .step-card .num { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; font-size: 13px; margin-bottom: 10px; }
+    .step-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .step-card p { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
 
     /* ===== Defense ===== */
-    .layers {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    .layer-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 22px 20px;
-    }
-    .layer-card .layer-num {
-      display: inline-block;
-      background: var(--ink);
-      color: #fff;
-      font-weight: 800;
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 100px;
-      margin-bottom: 10px;
-      letter-spacing: 0.5px;
-    }
-    .layer-card h3 {
-      font-size: 16px;
-      font-weight: 800;
-      margin-bottom: 6px;
-      letter-spacing: -0.3px;
-    }
-    .layer-card p {
-      font-size: 13px;
-      color: var(--ink-soft);
-      line-height: 1.55;
-      margin-bottom: 12px;
-    }
-    .layer-card .layer-attack {
-      font-size: 11px;
-      color: var(--accent);
-      font-weight: 700;
-      background: var(--accent-bg);
-      padding: 5px 10px;
-      border-radius: 8px;
-      display: inline-block;
-    }
-    .defense-note {
-      margin-top: 20px;
-      padding: 14px 18px;
-      background: var(--bg-warm);
-      border-left: 3px solid var(--accent);
-      border-radius: 4px;
-      font-size: 13px;
-      color: var(--ink-soft);
-    }
+    .layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .layer-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px 20px; }
+    .layer-card .layer-num { display: inline-block; background: var(--ink); color: #fff; font-weight: 800; font-size: 11px; padding: 4px 10px; border-radius: 100px; margin-bottom: 10px; letter-spacing: 0.5px; }
+    .layer-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
+    .layer-card p { font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 12px; }
+    .layer-card .layer-attack { font-size: 11px; color: var(--accent); font-weight: 700; background: var(--accent-bg); padding: 5px 10px; border-radius: 8px; display: inline-block; }
+    .defense-note { margin-top: 20px; padding: 14px 18px; background: rgba(245,236,213,0.15); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 13px; color: var(--ink-soft); }
     .defense-note strong { color: var(--ink); }
 
     /* ===== Install ===== */
-    .install-steps {
-      display: grid;
-      gap: 14px;
-    }
-    .install-step {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 16px 20px;
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-    }
-    .install-step .num {
-      flex-shrink: 0;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 14px;
-    }
+    .install-steps { display: grid; gap: 14px; }
+    .install-step { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06); border-radius: 12px; padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; }
+    .install-step .num { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; }
     .install-step .body { flex: 1; padding-top: 3px; }
     .install-step .body strong { display: block; font-size: 15px; margin-bottom: 3px; }
     .install-step .body small { color: var(--ink-muted); font-size: 12px; }
-    .code-block {
-      background: var(--ink);
-      color: #f5e6c8;
-      padding: 16px 20px;
-      border-radius: 10px;
-      font-family: ui-monospace, monospace;
-      font-size: 11px;
-      overflow-x: auto;
-      margin-top: 14px;
-      word-break: break-all;
-      border: 1px solid #2a2520;
-    }
+    .code-block { background: var(--ink); color: #f5e6c8; padding: 16px 20px; border-radius: 10px; font-family: ui-monospace, monospace; font-size: 11px; overflow-x: auto; margin-top: 14px; word-break: break-all; border: 1px solid #2a2520; }
 
     /* ===== Test + Footer ===== */
-    .test-cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    .test-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 20px 22px;
-      text-decoration: none;
-      color: var(--ink);
-      transition: transform 0.15s, border-color 0.15s;
-      display: block;
-    }
-    .test-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent-soft);
-    }
-    .test-card .label {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
+    .test-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .test-card { background: rgba(255,250,238,0.8); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; text-decoration: none; color: var(--ink); transition: transform 0.15s, border-color 0.15s; display: block; }
+    .test-card:hover { transform: translateY(-2px); border-color: var(--accent-soft); }
+    .test-card .label { font-size: 11px; font-weight: 800; letter-spacing: 0.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
     .test-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
     .test-card .desc { font-size: 13px; color: var(--ink-soft); margin-bottom: 12px; }
     .test-card .score { display: inline-block; font-size: 13px; font-weight: 700; }
     .test-card .score.high { color: var(--warn); }
     .test-card .score.warn { color: var(--accent); }
-    .footer {
-      margin-top: 40px;
-      padding: 24px 0 0;
-      text-align: center;
-      color: var(--ink-muted);
-      font-size: 13px;
-      border-top: 1px solid var(--line);
-    }
+    .footer { margin-top: 40px; padding: 24px 0 0; text-align: center; color: var(--ink-muted); font-size: 13px; border-top: 1px solid var(--line); }
     .footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
 
     /* ===== Mobile ===== */
     @media (max-width: 720px) {
+      .fp-wrap { position: static; }
       .fp-section {
-        position: relative;
-        height: auto;
-        min-height: 0;
-        opacity: 1;
-        transform: none;
-        pointer-events: auto;
-        transition: none;
-      }
-      .fp-section.exit-up, .fp-section.exit-down {
-        opacity: 1;
-        transform: none;
+        position: relative; transform: none !important;
+        transition: none !important;
+        height: auto; min-height: 0;
       }
       html, body { overflow: auto; height: auto; }
-      .fp-nav, .fp-progress { display: none; }
+      .scroll-hint, .fp-counter { display: none; }
       .problem-grid, .steps, .test-cards, .layers { grid-template-columns: 1fr; }
       .hero-inner h1 { font-size: 28px; }
       .hero-inner p.lead { font-size: 14px; }
-      .capy-stage { width: 220px; height: 160px; }
-      .capy-stage picture { width: 180px; margin-left: -90px; }
-      .install-callout { padding: 18px 14px 16px; }
+      .capy-stage { width: 200px; height: 150px; }
+      .capy-stage picture { width: 170px; margin-left: -85px; }
+      .install-callout { padding: 16px 14px; }
       .bm-link { padding: 14px 22px; font-size: 14px; }
       .code-block { font-size: 10px; }
       h2 { font-size: 24px; }
-      .scroll-hint { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Progress bar -->
-  <div class="fp-progress" id="fp-progress"></div>
+<div class="fp-wrap">
 
-  <!-- Dot navigation -->
-  <nav class="fp-nav" id="fp-nav"></nav>
-
-  <!-- Section 0: Hero -->
-  <section class="fp-section active" data-label="Home">
+  <!-- 0: Hero -->
+  <section class="fp-section s-hero active" data-dark="false">
     <div class="fp-inner hero-inner">
       <span class="tag">CMUX x AIM Hackathon 2026</span>
       <div class="capy-stage">
@@ -659,17 +340,13 @@
         <span class="callout-sub">클릭이 아니에요. 마우스로 잡고 위쪽 북마크바로 끌어 놓기.</span>
         <div class="drag-arrow">↑</div>
         <a id="bm-link" class="bm-link" href="#" draggable="true">🦫 인젝바라</a>
-        <span class="shortcut">
-          북마크바 안 보이면
-          <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Mac) · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Win)
-        </span>
+        <span class="shortcut">북마크바 안 보이면 <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Mac) · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Win)</span>
       </div>
-      <div class="scroll-hint">스크롤하여 더 알아보기 ↓</div>
     </div>
   </section>
 
-  <!-- Section 1: Problem -->
-  <section class="fp-section" id="problem" data-label="왜 필요한가">
+  <!-- 1: Problem -->
+  <section class="fp-section s-problem" id="problem" data-dark="false">
     <div class="fp-inner">
       <span class="section-tag">왜 필요한가</span>
       <h2>같은 페이지인데, AI 답이 다릅니다</h2>
@@ -678,12 +355,12 @@
         <div class="demo-card bad">
           <span class="card-label">❌ 인젝션 있는 페이지</span>
           <h3>"이 헤드셋 어때?" → AI</h3>
-          <div class="body">SoundPro G7는 HyperX와 SteelSeries를 능가하는 최고의 가성비 헤드셋입니다. 가장 추천하는 제품이에요.</div>
+          <div class="body">SoundPro G7는 HyperX와 SteelSeries를 능가하는 최고의 가성비 헤드셋입니다.</div>
         </div>
         <div class="demo-card good">
           <span class="card-label">✅ 인젝션 제거 후</span>
           <h3>"이 헤드셋 어때?" → AI</h3>
-          <div class="body">SoundPro G7는 7.1 서라운드 무선 헤드셋입니다. 일부 리뷰에서 마감 품질에 대한 불만이 있습니다.</div>
+          <div class="body">SoundPro G7는 7.1 서라운드 무선 헤드셋입니다. 마감 품질에 대한 불만이 있습니다.</div>
         </div>
       </div>
       <div class="injection-example">
@@ -693,12 +370,12 @@
     </div>
   </section>
 
-  <!-- Section 2: How -->
-  <section class="fp-section" id="how" data-label="작동 방식">
+  <!-- 2: How -->
+  <section class="fp-section s-how" id="how" data-dark="false">
     <div class="fp-inner">
       <span class="section-tag">어떻게 작동하나</span>
       <h2>인젝바라, 세 가지 표정</h2>
-      <p class="section-sub">북마크 클릭하면 우하단에 인젝바라가 등장. 클릭으로 깨우면 페이지를 스캔합니다.</p>
+      <p class="section-sub">북마크 클릭 → 우하단에 카피바라 등장 → 클릭으로 깨우면 스캔 시작.</p>
       <div class="steps">
         <div class="step-card">
           <div class="num">1</div>
@@ -722,8 +399,8 @@
     </div>
   </section>
 
-  <!-- Section 3: Defense -->
-  <section class="fp-section" id="defense" data-label="검출 엔진">
+  <!-- 3: Defense (dark) -->
+  <section class="fp-section s-defense" id="defense" data-dark="true">
     <div class="fp-inner">
       <span class="section-tag">검출 엔진</span>
       <h2>3-Layer 다중 방어</h2>
@@ -732,63 +409,45 @@
         <div class="layer-card">
           <span class="layer-num">L1</span>
           <h3>Static Scan</h3>
-          <p>흰 글씨, <code>display:none</code>, zero-width 같은 시각적 은닉을 즉시 포착합니다.</p>
+          <p>흰 글씨, <code style="color:#f97316">display:none</code>, zero-width 같은 시각적 은닉을 즉시 포착.</p>
           <span class="layer-attack">→ Attack A: 시각적 은닉</span>
         </div>
         <div class="layer-card">
           <span class="layer-num">L2</span>
           <h3>PMI Signatures</h3>
-          <p>"ignore previous..." 같은 인젝션 특유의 명령조 어휘를 코퍼스 학습으로 차단합니다.</p>
+          <p>"ignore previous..." 같은 인젝션 명령조 어휘를 코퍼스 학습으로 차단.</p>
           <span class="layer-attack">→ Attack B: 명령조 어휘</span>
         </div>
         <div class="layer-card">
           <span class="layer-num">L3</span>
           <h3>LLM Judge</h3>
-          <p>Gemini 기반 문맥 의미 분석 — 패턴을 우회한 변칙 인젝션까지 최종 탐지합니다.</p>
+          <p>Gemini 기반 문맥 의미 분석 — 변칙 인젝션까지 최종 탐지.</p>
           <span class="layer-attack">→ Attack C: 신종 변칙</span>
         </div>
       </div>
       <div class="defense-note">
-        <strong>Defense in Depth.</strong> 다층 구조로 단일 실패 지점을 제거합니다. 한 레이어를 우회해도 다음 레이어가 방어합니다.
+        <strong>Defense in Depth.</strong> 한 레이어를 우회해도 다음 레이어가 방어합니다.
       </div>
     </div>
   </section>
 
-  <!-- Section 4: Install -->
-  <section class="fp-section" id="install" data-label="설치">
+  <!-- 4: Install -->
+  <section class="fp-section s-install" id="install" data-dark="false">
     <div class="fp-inner">
       <span class="section-tag">설치 (10초)</span>
       <h2>북마크바에 드래그</h2>
       <p class="section-sub">북마크바가 안 보이면 <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Mac) / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Win)</p>
       <div class="install-steps">
-        <div class="install-step">
-          <div class="num">1</div>
-          <div class="body">
-            <strong>위 🦫 인젝바라 버튼을 북마크바로 끌어다 놓기</strong>
-            <small>드래그가 안 되면 아래 코드를 새 북마크 URL란에 붙여넣기</small>
-          </div>
-        </div>
-        <div class="install-step">
-          <div class="num">2</div>
-          <div class="body">
-            <strong>아무 페이지에서 북마크 클릭</strong>
-            <small>우하단에 자고 있는 인젝바라가 나타납니다</small>
-          </div>
-        </div>
-        <div class="install-step">
-          <div class="num">3</div>
-          <div class="body">
-            <strong>인젝바라를 클릭해서 깨움</strong>
-            <small>눈을 뜨고 스캔 시작 → 인젝션 있으면 빨간 ! 표시</small>
-          </div>
-        </div>
+        <div class="install-step"><div class="num">1</div><div class="body"><strong>위 🦫 인젝바라 버튼을 북마크바로 끌어다 놓기</strong><small>드래그가 안 되면 아래 코드를 새 북마크 URL란에 붙여넣기</small></div></div>
+        <div class="install-step"><div class="num">2</div><div class="body"><strong>아무 페이지에서 북마크 클릭</strong><small>우하단에 자고 있는 인젝바라가 나타납니다</small></div></div>
+        <div class="install-step"><div class="num">3</div><div class="body"><strong>인젝바라를 클릭해서 깨움</strong><small>눈을 뜨고 스캔 시작 → 인젝션 있으면 빨간 ! 표시</small></div></div>
       </div>
       <div class="code-block" id="bm-code"></div>
     </div>
   </section>
 
-  <!-- Section 5: Test -->
-  <section class="fp-section" id="test" data-label="테스트">
+  <!-- 5: Test -->
+  <section class="fp-section s-test" id="test" data-dark="false">
     <div class="fp-inner">
       <span class="section-tag">테스트</span>
       <h2>허니팟 페이지에서 카피바라 깨워보기</h2>
@@ -813,158 +472,131 @@
     </div>
   </section>
 
-  <script>
-    (function () {
-      /* ===== Fullpage Scroll Engine ===== */
-      var sections = document.querySelectorAll('.fp-section');
-      var nav = document.getElementById('fp-nav');
-      var progress = document.getElementById('fp-progress');
-      var current = 0;
-      var isAnimating = false;
-      var isMobile = window.matchMedia('(max-width: 720px)').matches;
+</div><!-- /fp-wrap -->
 
-      // Build dot nav
-      sections.forEach(function (s, i) {
-        var btn = document.createElement('button');
-        btn.setAttribute('aria-label', s.dataset.label || 'Section ' + (i + 1));
-        if (i === 0) btn.classList.add('active');
-        var label = document.createElement('span');
-        label.className = 'fp-nav-label';
-        label.textContent = s.dataset.label || '';
-        btn.appendChild(label);
-        btn.addEventListener('click', function () { goTo(i); });
-        nav.appendChild(btn);
-      });
+<!-- Scroll hint (bottom center) -->
+<div class="scroll-hint" id="scroll-hint">
+  <span>scroll</span>
+  <div class="arrow"></div>
+</div>
 
-      function updateProgress() {
-        var pct = ((current + 1) / sections.length) * 100;
-        progress.style.width = pct + '%';
-      }
+<!-- Section counter (bottom right) -->
+<div class="fp-counter" id="fp-counter">01 / 06</div>
 
-      function goTo(idx) {
-        if (idx === current || idx < 0 || idx >= sections.length || isAnimating || isMobile) return;
-        isAnimating = true;
-        var dir = idx > current ? 'down' : 'up';
+<script>
+(function () {
+  /* ===== Fullpage Engine — baemin-style stacked slide ===== */
+  var sections = document.querySelectorAll('.fp-section');
+  var hint = document.getElementById('scroll-hint');
+  var counter = document.getElementById('fp-counter');
+  var current = 0;
+  var total = sections.length;
+  var isAnimating = false;
+  var isMobile = window.matchMedia('(max-width: 720px)').matches;
 
-        // Exit current
-        sections[current].classList.remove('active');
-        sections[current].classList.add(dir === 'down' ? 'exit-up' : 'exit-down');
+  // Initial state: first section active, rest below
+  sections.forEach(function (s, i) {
+    if (i === 0) { s.classList.add('active'); s.classList.remove('below'); }
+    else { s.classList.add('below'); s.classList.remove('active'); }
+  });
 
-        // Enter next
-        var next = sections[idx];
-        next.classList.remove('exit-up', 'exit-down');
-        // Set initial position for enter
-        next.style.transition = 'none';
-        next.style.transform = dir === 'down' ? 'translateY(40px)' : 'translateY(-40px)';
-        next.style.opacity = '0';
-        // Force reflow
-        next.offsetHeight;
-        next.style.transition = '';
-        next.classList.add('active');
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
-        // Update nav
-        nav.querySelectorAll('button').forEach(function (b, i) {
-          b.classList.toggle('active', i === idx);
-        });
+  function updateUI() {
+    counter.textContent = pad(current + 1) + ' / ' + pad(total);
+    // Dark section awareness
+    var isDark = sections[current].dataset.dark === 'true';
+    hint.classList.toggle('on-dark', isDark);
+    counter.classList.toggle('on-dark', isDark);
+    // Hide hint on last section
+    hint.classList.toggle('hide', current === total - 1);
+  }
 
-        var prev = current;
-        current = idx;
-        updateProgress();
+  function goTo(idx) {
+    if (idx === current || idx < 0 || idx >= total || isAnimating || isMobile) return;
+    isAnimating = true;
 
-        setTimeout(function () {
-          sections[prev].classList.remove('exit-up', 'exit-down');
-          isAnimating = false;
-        }, 650);
-      }
+    var prev = sections[current];
+    var next = sections[idx];
+    var goingDown = idx > current;
 
-      // Wheel handler
-      var lastWheel = 0;
-      document.addEventListener('wheel', function (e) {
-        if (isMobile) return;
-        e.preventDefault();
-        var now = Date.now();
-        if (now - lastWheel < 800) return;
-        lastWheel = now;
-        if (e.deltaY > 0) goTo(current + 1);
-        else if (e.deltaY < 0) goTo(current - 1);
-      }, { passive: false });
+    // Prepare next section position (no transition)
+    next.style.transition = 'none';
+    next.classList.remove('active', 'above', 'below');
+    next.classList.add(goingDown ? 'below' : 'above');
+    next.offsetHeight; // reflow
+    next.style.transition = '';
 
-      // Keyboard
-      document.addEventListener('keydown', function (e) {
-        if (isMobile) return;
-        if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
-          e.preventDefault(); goTo(current + 1);
-        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-          e.preventDefault(); goTo(current - 1);
-        } else if (e.key === 'Home') {
-          e.preventDefault(); goTo(0);
-        } else if (e.key === 'End') {
-          e.preventDefault(); goTo(sections.length - 1);
-        }
-      });
+    // Animate both
+    prev.classList.remove('active');
+    prev.classList.add(goingDown ? 'above' : 'below');
+    next.classList.remove('above', 'below');
+    next.classList.add('active');
 
-      // Touch swipe
-      var touchStart = 0;
-      document.addEventListener('touchstart', function (e) {
-        touchStart = e.touches[0].clientY;
-      }, { passive: true });
-      document.addEventListener('touchend', function (e) {
-        if (isMobile) return;
-        var diff = touchStart - e.changedTouches[0].clientY;
-        if (Math.abs(diff) > 50) {
-          if (diff > 0) goTo(current + 1);
-          else goTo(current - 1);
-        }
-      }, { passive: true });
+    current = idx;
+    updateUI();
 
-      // Resize handler
-      window.addEventListener('resize', function () {
-        isMobile = window.matchMedia('(max-width: 720px)').matches;
-      });
+    setTimeout(function () { isAnimating = false; }, 850);
+  }
 
-      updateProgress();
+  // Wheel
+  var wheelAccum = 0;
+  var wheelTimer = null;
+  document.addEventListener('wheel', function (e) {
+    if (isMobile) return;
+    e.preventDefault();
+    wheelAccum += e.deltaY;
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(function () { wheelAccum = 0; }, 200);
+    if (Math.abs(wheelAccum) > 50) {
+      if (wheelAccum > 0) goTo(current + 1);
+      else goTo(current - 1);
+      wheelAccum = 0;
+    }
+  }, { passive: false });
 
-      /* ===== Bookmarklet Code ===== */
-      var DEPLOY_URL = window.location.origin;
-      var bmCode = [
-        "javascript:(function(){",
-        "var s=document.createElement('script');",
-        "s.src='" + DEPLOY_URL + "/injectscan.js?'+Date.now();",
-        "s.onerror=function(){",
-        "  var d=document.createElement('div');",
-        "  d.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#065f46,#047857);color:#fff;padding:20px 28px;border-radius:14px;z-index:2147483647;font-family:-apple-system,sans-serif;max-width:440px;line-height:1.6;box-shadow:0 12px 32px rgba(0,0,0,0.3);text-align:center';",
-        "  d.innerHTML='",
-        "<div style=font-size:28px;margin-bottom:8px>\\ud83d\\udee1\\ufe0f</div>",
-        "<div style=font-size:15px;font-weight:800;margin-bottom:6px>\\uc774 \\uc0ac\\uc774\\ud2b8\\ub294 \\uc678\\ubd80 \\uc2a4\\ud06c\\ub9bd\\ud2b8 \\uc811\\uadfc\\uc744 \\ud5c8\\uc6a9\\ud558\\uc9c0 \\uc54a\\uc2b5\\ub2c8\\ub2e4</div>",
-        "<div style=font-size:12px;opacity:0.85>\\ubcf4\\uc548 \\uc815\\ucc45(CSP)\\uc774 \\ud65c\\uc131\\ud654\\ub418\\uc5b4 \\uc788\\uc5b4<br>AI \\ud504\\ub86c\\ud504\\ud2b8 \\uc778\\uc81d\\uc158 \\uc704\\ud5d8\\ub3c4 \\ub0ae\\uc2b5\\ub2c8\\ub2e4</div>",
-        "';",
-        "  document.body.appendChild(d);",
-        "  setTimeout(function(){d.style.transition='opacity 0.5s';d.style.opacity='0';setTimeout(function(){d.remove()},500)},5000);",
-        "};",
-        "document.body.appendChild(s);",
-        "})()"
-      ].join('');
-      document.getElementById('bm-link').setAttribute('href', bmCode);
-      document.getElementById('bm-code').textContent = bmCode;
+  // Keyboard
+  document.addEventListener('keydown', function (e) {
+    if (isMobile) return;
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    else if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); goTo(current - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    else if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+  });
 
-      /* ===== Hero Capybara Cycle ===== */
-      var states = [
-        { id: 'capy-sleep', label: '자고 있어요 💤' },
-        { id: 'capy-awake', label: '깨어났어요 👀' },
-        { id: 'capy-warning', label: '인젝션 발견! ⚠️' },
-        { id: 'capy-awake', label: '스캔 중...' },
-      ];
-      var idx = 0;
-      var labelEl = document.getElementById('stage-label');
-      function cycle() {
-        document.querySelectorAll('.capy-stage picture').forEach(function (p) { p.classList.remove('active'); });
-        var cur = states[idx];
-        document.getElementById(cur.id).classList.add('active');
-        labelEl.textContent = cur.label;
-        idx = (idx + 1) % states.length;
-      }
-      setInterval(cycle, 1800);
-    })();
-  </script>
+  // Touch
+  var ty = 0;
+  document.addEventListener('touchstart', function (e) { ty = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (isMobile) return;
+    var d = ty - e.changedTouches[0].clientY;
+    if (Math.abs(d) > 50) { d > 0 ? goTo(current + 1) : goTo(current - 1); }
+  }, { passive: true });
+
+  window.addEventListener('resize', function () { isMobile = window.matchMedia('(max-width: 720px)').matches; });
+  updateUI();
+
+  /* ===== Bookmarklet ===== */
+  var DEPLOY_URL = window.location.origin;
+  var bmCode = "javascript:(function(){var s=document.createElement('script');s.src='" + DEPLOY_URL + "/injectscan.js?'+Date.now();s.onerror=function(){var d=document.createElement('div');d.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#065f46,#047857);color:#fff;padding:20px 28px;border-radius:14px;z-index:2147483647;font-family:-apple-system,sans-serif;max-width:440px;line-height:1.6;box-shadow:0 12px 32px rgba(0,0,0,0.3);text-align:center';d.innerHTML='<div style=font-size:28px;margin-bottom:8px>\\ud83d\\udee1\\ufe0f</div><div style=font-size:15px;font-weight:800;margin-bottom:6px>\\uc774 \\uc0ac\\uc774\\ud2b8\\ub294 \\uc678\\ubd80 \\uc2a4\\ud06c\\ub9bd\\ud2b8 \\uc811\\uadfc\\uc744 \\ud5c8\\uc6a9\\ud558\\uc9c0 \\uc54a\\uc2b5\\ub2c8\\ub2e4</div><div style=font-size:12px;opacity:0.85>\\ubcf4\\uc548 \\uc815\\ucc45(CSP)\\uc774 \\ud65c\\uc131\\ud654\\ub418\\uc5b4 \\uc788\\uc5b4<br>AI \\ud504\\ub86c\\ud504\\ud2b8 \\uc778\\uc81d\\uc158 \\uc704\\ud5d8\\ub3c4 \\ub0ae\\uc2b5\\ub2c8\\ub2e4</div>';document.body.appendChild(d);setTimeout(function(){d.style.transition='opacity 0.5s';d.style.opacity='0';setTimeout(function(){d.remove()},500)},5000);};document.body.appendChild(s);})()";
+  document.getElementById('bm-link').setAttribute('href', bmCode);
+  document.getElementById('bm-code').textContent = bmCode;
+
+  /* ===== Capybara Cycle ===== */
+  var states = [
+    { id: 'capy-sleep', label: '자고 있어요 💤' },
+    { id: 'capy-awake', label: '깨어났어요 👀' },
+    { id: 'capy-warning', label: '인젝션 발견! ⚠️' },
+    { id: 'capy-awake', label: '스캔 중...' },
+  ];
+  var ci = 0, labelEl = document.getElementById('stage-label');
+  function cycle() {
+    document.querySelectorAll('.capy-stage picture').forEach(function (p) { p.classList.remove('active'); });
+    var c = states[ci]; document.getElementById(c.id).classList.add('active'); labelEl.textContent = c.label;
+    ci = (ci + 1) % states.length;
+  }
+  setInterval(cycle, 1800);
+})();
+</script>
 </body>
 </html>
