@@ -23,19 +23,22 @@
       --line: #e8dfc8;
       --card: #fffaee;
     }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
     html {
       scroll-behavior: smooth;
-      scroll-snap-type: y mandatory;
-      overflow-y: scroll;
-      height: 100%;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", sans-serif;
       background: var(--bg);
       color: var(--ink);
       line-height: 1.6;
-      min-height: 100%;
       overflow-x: hidden;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
       word-break: keep-all;
       overflow-wrap: break-word;
     }
