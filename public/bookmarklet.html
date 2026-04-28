@@ -23,16 +23,31 @@
       --line: #e8dfc8;
       --card: #fffaee;
     }
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      height: 100%;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", sans-serif;
       background: var(--bg);
       color: var(--ink);
       line-height: 1.6;
-      min-height: 100vh;
+      min-height: 100%;
       overflow-x: hidden;
       word-break: keep-all;
       overflow-wrap: break-word;
+    }
+
+    /* ===== Snap Section ===== */
+    .snap-section {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     /* ===== Hero ===== */
@@ -241,6 +256,7 @@
       max-width: 880px;
       margin: 0 auto;
       padding: 64px 24px;
+      width: 100%;
     }
     .section-tag {
       display: inline-block;
@@ -464,8 +480,9 @@
     /* Footer */
     .footer {
       max-width: 880px;
-      margin: 40px auto 0;
+      margin: auto auto 0;
       padding: 32px 24px 48px;
+      width: 100%;
       text-align: center;
       color: var(--ink-muted);
       font-size: 13px;
@@ -536,7 +553,7 @@
   </style>
 </head>
 <body>
-  <header class="hero">
+  <header class="hero snap-section">
     <span class="tag">🦫 인젝바라 Bookmarklet</span>
     <div class="capy-stage">
       <span class="stage-label" id="stage-label">자고 있어요</span>
@@ -561,7 +578,7 @@
     </div>
   </header>
 
-  <section id="problem">
+  <section id="problem" class="snap-section">
     <span class="section-tag">왜 필요한가</span>
     <h2>같은 페이지인데, AI 답이 다릅니다</h2>
     <p class="section-sub">공격자가 페이지에 흰 글씨로 한 줄을 박아두면, 사람 눈에는 안 보이지만 AI 에이전트가 읽고 명령으로 받아들입니다. 결과는 편향된 요약·추천·평가.</p>
@@ -587,7 +604,7 @@
     </div>
   </section>
 
-  <section id="how">
+  <section id="how" class="snap-section">
     <span class="section-tag">어떻게 작동하나</span>
     <h2>인젝바라, 세 가지 표정</h2>
     <p class="section-sub">북마크 클릭하면 우하단에 인젝바라가 등장. 클릭으로 깨우면 페이지를 스캔해서 인젝션을 찾습니다.</p>
@@ -614,7 +631,7 @@
     </div>
   </section>
 
-  <section id="defense">
+  <section id="defense" class="snap-section">
     <span class="section-tag">검출 엔진</span>
     <h2>3-Layer 다중 방어</h2>
     <p class="section-sub">정적 패턴 + 통계 시그니처 + LLM 판정. 어느 한 층이 뚫려도 다음 층이 잡습니다. 630개 공격 코퍼스와 5만 개 정상 문장으로 학습된 통계 모델이 단순 키워드 매칭을 넘어선 탐지를 제공합니다.</p>
@@ -646,7 +663,7 @@
     </div>
   </section>
 
-  <section id="install">
+  <section id="install" class="snap-section">
     <span class="section-tag">설치 (10초)</span>
     <h2>북마크바에 드래그</h2>
     <p class="section-sub">북마크바가 안 보이면 ⌘+Shift+B (Mac) / Ctrl+Shift+B (Win)으로 표시.</p>
@@ -678,7 +695,7 @@
     <div class="code-block" id="bm-code"></div>
   </section>
 
-  <section id="test">
+  <section id="test" class="snap-section">
     <span class="section-tag">테스트</span>
     <h2>허니팟 페이지에서 카피바라 깨워보기 ›</h2>
     <p class="section-sub">아래 페이지를 열고 북마크를 클릭하세요. 카피바라가 인젝션을 찾아냅니다.</p>
@@ -697,11 +714,11 @@
         <span class="score warn">예상 50점 ⚠️ Suspicious</span>
       </a>
     </div>
-  </section>
 
-  <footer class="footer">
-    <div>인젝바라 · CMUX × AIM 해커톤 2026 · <a href="https://github.com/qnftk020/cmux-vibe">GitHub</a></div>
-  </footer>
+    <footer class="footer">
+      <div>인젝바라 · CMUX × AIM 해커톤 2026 · <a href="https://github.com/qnftk020/cmux-vibe">GitHub</a></div>
+    </footer>
+  </section>
 
   <script>
     (function () {
