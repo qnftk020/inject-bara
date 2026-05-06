@@ -38,7 +38,7 @@
     .fp-section.active{transform:translateY(0);z-index:2}
     .fp-section.above{transform:translateY(-100%);z-index:1}
     .fp-section.below{transform:translateY(100%);z-index:1}
-    .fp-inner{max-width:var(--max-w);width:100%;padding:56px 32px;margin:auto}
+    .fp-inner{max-width:var(--max-w);width:100%;padding:56px 32px 88px;margin:auto}
 
     /* ===== Section colors ===== */
     .s-hero{background:#faf5e9}
@@ -89,7 +89,7 @@
     .top-bar.on-dark .gh-link:hover{color:#fff}
 
     /* ===== Scroll hint / Counter ===== */
-    .scroll-hint{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);z-index:50;font-size:12px;color:var(--ink-muted);display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .4s}
+    .scroll-hint{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:50;font-size:12px;color:var(--ink-muted);display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .4s}
     .scroll-hint .arrow{width:18px;height:18px;border-right:2px solid var(--ink-muted);border-bottom:2px solid var(--ink-muted);transform:rotate(45deg);animation:arrow-bob 1.5s ease-in-out infinite}
     @keyframes arrow-bob{0%,100%{translate:0 0;opacity:.3}50%{translate:0 6px;opacity:1}}
     .scroll-hint.hide{opacity:0;pointer-events:none}
@@ -193,6 +193,10 @@
       .fp-inner{padding:48px 28px}
       .hero-inner h1{font-size:40px}
       h2{font-size:32px}
+    }
+
+    @media(max-height:820px){
+      .scroll-hint{display:none}
     }
 
     /* ===== Mobile ===== */
